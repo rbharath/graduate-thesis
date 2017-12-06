@@ -1,0 +1,707 @@
+
+\section{MoleculeNet Appendix}
+
+\subsection{Model Training and Hyperparameter Optimization}
+All models were trained on Stanford's GPU clusters via DeepChem. No model was allowed to train for more than 10 hours(time profile in Table~\ref{tab:running_time}. Users can reproduce benchmarks locally by following directions from DeepChem.
+
+Hyperparameters were determined using Gaussian Process Optimization via pyGPGO (https://github.com/hawk31/pyGPGO), with max number of iterations set to 20. Optimized hyperparameters for each model are listed, detailed hyperparameters can be found on Deepchem.
+
+\subsubsection{Logistic Regression (Logreg)}
+\begin{itemize}
+    \item Learning rate
+    \item L2 regularization
+    \item Batch size
+\end{itemize}
+
+\subsubsection{Support Vector Classification (KernelSVM)}
+\begin{itemize}
+    \item Penalty parameter C
+    \item Kernel coefficient gamma for radial basis function
+\end{itemize}
+
+\subsubsection{Kernel Ridge Regression (KRR)}
+\begin{itemize}
+    \item Penalty parameter
+\end{itemize}
+
+\subsubsection{Random Forest (RF)}
+\begin{itemize}
+    \item Number of trees in the forest: 500
+\end{itemize}
+
+\subsubsection{Gradient Boosting (XGBoost)}
+\begin{itemize}
+    \item Maximum tree depth
+    \item Learning rate
+    \item Number of boosted tree
+\end{itemize}
+
+\subsubsection{Multitask/Singletask Networks}
+\begin{itemize}
+    \item Layer size
+    \item Weight - initial standard deviation
+    \item Bias - initial constant
+    \item Learning rate
+    \item L2 regularization
+    \item Batch size
+\end{itemize}
+
+\subsubsection{Bypass Networks}
+\begin{itemize}
+    \item Layer size(main layer and bypass layer)
+    \item Weight - initial standard deviation(main layer and bypass layer)
+    \item Bias - initial constant(main layer and bypass layer)
+    \item Learning rate
+    \item L2 regularization
+    \item Batch size
+\end{itemize}
+
+\subsubsection{Influence Relevance Voting (IRV)}
+\begin{itemize}
+    \item K(number of nearest neighbors)
+    \item Learning rate
+    \item Batch size
+\end{itemize}
+
+\subsubsection{Graph Convolutional models (GC)}
+\begin{itemize}
+    \item Layer size of convolutional layers
+    \item Layer size of fully-connected layer
+    \item Learning rate
+    \item Batch size
+\end{itemize}
+
+\subsubsection{Weave models}
+\begin{itemize}
+    \item Length of output features(layer size) of convolutional layers
+    \item Learning rate
+    \item Batch size
+\end{itemize}
+
+\subsubsection{Deep Tensor Neural Networks (DTNN)}
+\begin{itemize}
+    \item Length of atom embedding(features)
+    \item Size of distance bin(from -1\AA~to 19\AA)
+    \item Learning rate
+    \item Batch size
+\end{itemize}
+
+\subsubsection{Directed Acyclic Graph models (DAG)}
+\begin{itemize}
+    \item Length of features in the convolutional layer
+    \item Maximum number of propagation of a graph
+    \item Learning rate
+    \item Batch size
+\end{itemize}
+
+\subsubsection{Message Passing Neural Networks (MPNN)}
+\begin{itemize}
+    \item Number of message passing phases
+    \item Number of steps(iterations) in readout phase
+    \item Learning rate
+    \item Batch size
+\end{itemize}
+
+\subsubsection{ANI-1}
+\begin{itemize}
+    \item Layer size
+    \item Length of radial and angular symmetry functions
+    \item Learning rate
+    \item Batch size
+\end{itemize}
+
+All final performances were run three times with different fixed numerical seeds on the best-performing hyperparameters, and data splitting methods have been set to maintain determistic behavior. These settings control most randomness in learning process, but benchmark runs(on the same seed) may vary on the order of 1\% due to other sources of nondeterminism. Mean and standard deviations of all results are presented in the Performances section of Appendix.
+
+We measured model running time of Tox21, MUV, QM8 and Lipophicility on a single node in Stanford's GPU clusters(CPU: Intel Xeon E5-2640 v3 @2.60 GHz, GPU: NVIDIA Tesla K80), results listed below:
+\begin{table}[H]
+    \small
+    \centering
+    \begin{threeparttable}
+    \caption{Time Profile for Tox21, MUV, QM8 and Lipophilicity(second)}
+    \begin{tabular}{ |c|c|c|c|c| } 
+    \hline
+    \textbf{Model} & \textbf{Tox21} & \textbf{MUV} & \textbf{QM8} & \textbf{Lipophilicity} \\
+    \hline
+    \hline
+    Logreg & 93 & 522 & &\\
+    \hline
+    KernelSVM & 2574 & 2231 & & \\
+    \hline
+    KRR & & & 3390/5153* & 24\\
+    \hline
+    RF & 24273 & & & 186\\
+    \hline
+    XGBoost & 2082 & 2418 & & 410\\
+    \hline
+    Multitask/Singletask & 22 & 858 & 275/701* & 21\\
+    \hline
+    Bypass & 31 & 938 & &\\
+    \hline
+    IRV & 58 & 2674 & &\\
+    \hline
+    GC & 246 & 2320 & 512 & 131\\
+    \hline
+    Weave & 323 & 4593 & & 255\\
+    \hline
+    DAG & & & & 5142\\
+    \hline
+    DTNN & & & 940 &\\
+    \hline
+    MPNN & & & 3383 & 1626\\
+    \hline
+    \end{tabular}
+    \label{tab:running_time}
+    \begin{tablenotes}
+        \item * ECFP/Coulomb Matrix
+    \end{tablenotes}
+    \end{threeparttable}
+\end{table}
+
+\subsection{Performances}
+\begin{table}[H]
+    \small
+    \centering
+    \caption{PCBA, MUV, HIV and BACE Performances: AUC-PRC for PCBA and MUV, AUC-ROC for HIV and BACE }
+    \begin{tabular}{ |c|c|c|c|c| } 
+    \hline
+    \textbf{Model} & \textbf{Model} & \textbf{Training} & \textbf{Validation} & \textbf{Test} \\
+    \hline
+    \hline    
+    \multirow{4}{*}{PCBA}
+    & Logreg & $0.166\pm0.001$ & $0.130\pm0.004$ & $0.129\pm0.003$ \\\cline{2-5}
+    & Multitask & $0.100\pm0.003$ & $0.097\pm0.000$ & $0.100\pm0.006$ \\\cline{2-5}
+    & Bypass & $0.121\pm0.001$ & $0.111\pm0.003$ & $0.112\pm0.002$ \\\cline{2-5}
+    & GC & $0.151\pm0.001$ & $\mathbf{0.136\pm0.003}$ & $\mathbf{0.136\pm0.004}$ \\\cline{2-5}
+    \hline
+    \hline    
+    \multirow{8}{*}{MUV}
+    & Logreg & $0.238\pm0.010$ & $0.036\pm0.009$ & $0.070\pm0.009$ \\\cline{2-5}
+    & KernelSVM & $0.922\pm0.034$ & $0.113\pm0.039$ & $0.137\pm0.033$ \\\cline{2-5}
+    & XGBoost & $0.159\pm0.018$ & $0.066\pm0.053$ & $0.086\pm0.033$ \\\cline{2-5}
+    & IRV & $0.043\pm0.006$ & $0.069\pm0.008$ & $0.087\pm0.025$ \\\cline{2-5}
+    & Multitask & $0.385\pm0.014$ & $\mathbf{0.202\pm0.032}$ & $\mathbf{0.184\pm0.020}$ \\\cline{2-5}
+    & Bypass & $0.317\pm0.027$ & $0.166\pm0.043$ & $0.148\pm0.069$ \\\cline{2-5}
+    & GC & $0.040\pm0.013$ & $0.049\pm0.023$ & $0.046\pm0.031$ \\\cline{2-5}
+    & Weave & $0.060\pm0.030$ & $0.127\pm0.028$ & $0.109\pm0.028$ \\\cline{2-5}
+    \hline
+    \hline    
+    \multirow{8}{*}{HIV}
+    & Logreg & $0.834\pm0.004$ & $0.788\pm0.016$ & $0.702\pm0.018$ \\\cline{2-5}
+    & KernelSVM & $0.999\pm0.000$ & $0.837\pm0.000$ & $\mathbf{0.792\pm0.000}$ \\\cline{2-5}
+    & XGBoost & $0.942\pm0.000$ & $\mathbf{0.841\pm0.000}$ & $0.756\pm0.000$ \\\cline{2-5}
+    & IRV & $0.849\pm0.000$ & $0.818\pm0.000$ & $0.737\pm0.000$ \\\cline{2-5}
+    & Multitask & $0.753\pm0.012$ & $0.711\pm0.027$ & $0.698\pm0.037$ \\\cline{2-5}
+    & Bypass & $0.736\pm0.017$ & $0.719\pm0.012$ & $0.693\pm0.026$ \\\cline{2-5}
+    & GC & $0.903\pm0.004$ & $0.792\pm0.014$ & $0.763\pm0.016$ \\\cline{2-5}
+    & Weave & $0.725\pm0.004$ & $0.742\pm0.040$ & $0.703\pm0.039$ \\\cline{2-5}
+    \hline
+    \hline    
+    \multirow{9}{*}{BACE}
+    & Logreg & $0.960\pm0.001$ & $0.719\pm0.003$ & $0.781\pm0.010$ \\\cline{2-5}
+    & KernelSVM & $0.986\pm0.000$ & $0.739\pm0.000$ & $0.862\pm0.000$ \\\cline{2-5}
+    & XGBoost & $0.933\pm0.000$ & $\mathbf{0.756\pm0.000}$ & $0.850\pm0.000$ \\\cline{2-5}
+    & RF & $0.999\pm0.000$ & $0.728\pm0.004$ & $\mathbf{0.867\pm0.008}$ \\\cline{2-5}
+    & IRV & $0.887\pm0.000$ & $0.715\pm0.001$ & $0.838\pm0.000$ \\\cline{2-5}
+    & Multitask & $0.863\pm0.034$ & $0.696\pm0.037$ & $0.824\pm0.006$ \\\cline{2-5}
+    & Bypass & $0.931\pm0.001$ & $0.745\pm0.017$ & $0.829\pm0.006$ \\\cline{2-5}
+    & GC & $0.852\pm0.046$ & $0.627\pm0.015$ & $0.783\pm0.014$ \\\cline{2-5}
+    & Weave & $0.862\pm0.009$ & $0.638\pm0.014$ & $0.806\pm0.002$ \\\cline{2-5}
+    \hline
+    \end{tabular}
+    \label{tab:PCBA_MUV_HIV_BACE}
+\end{table}
+    
+\begin{table}[H]
+    \small
+    \centering
+    \caption{BBBP, Tox21, ToxCast, SIDER, ClinTox Performances (AUC-ROC)}
+    \begin{tabular}{ |c|c|c|c|c| } 
+    \hline
+    \textbf{Model} & \textbf{Model} & \textbf{Training} & \textbf{Validation} & \textbf{Test} \\
+    \hline
+    \hline    
+    \multirow{9}{*}{BBBP}
+    & Logreg & $0.986\pm0.001$ & $0.958\pm0.003$ & $0.699\pm0.002$ \\\cline{2-5}
+    & KernelSVM & $0.995\pm0.000$ & $0.964\pm0.000$ & $\mathbf{0.729\pm0.000}$ \\\cline{2-5}
+    & XGBoost & $0.987\pm0.000$ & $0.956\pm0.000$ & $0.696\pm0.000$ \\\cline{2-5}
+    & RF & $1.000\pm0.000$ & $0.956\pm0.002$ & $0.714\pm0.000$ \\\cline{2-5}
+    & IRV & $0.915\pm0.000$ & $\mathbf{0.964\pm0.000}$ & $0.700\pm0.000$ \\\cline{2-5}
+    & Multitask & $0.908\pm0.019$ & $0.955\pm0.002$ & $0.688\pm0.005$ \\\cline{2-5}
+    & Bypass & $0.950\pm0.005$ & $0.960\pm0.003$ & $0.702\pm0.006$ \\\cline{2-5}
+    & GC & $0.956\pm0.004$ & $0.943\pm0.002$ & $0.690\pm0.009$ \\\cline{2-5}
+    & Weave & $0.873\pm0.010$ & $0.951\pm0.005$ & $0.671\pm0.014$ \\\cline{2-5}
+    \hline
+    \hline    
+    \multirow{9}{*}{Tox21}
+    & Logreg & $0.910\pm0.002$ & $0.772\pm0.011$ & $0.794\pm0.015$ \\\cline{2-5}
+    & KernelSVM & $0.998\pm0.000$ & $0.818\pm0.010$ & $0.822\pm0.006$ \\\cline{2-5}
+    & XGBoost & $0.899\pm0.011$ & $0.775\pm0.018$ & $0.794\pm0.014$ \\\cline{2-5}
+    & RF & $0.999\pm0.000$ & $0.763\pm0.002$ & $0.769\pm0.015$ \\\cline{2-5}
+    & IRV & $0.805\pm0.003$ & $0.807\pm0.006$ & $0.799\pm0.006$ \\\cline{2-5}
+    & Multitask & $0.884\pm0.001$ & $0.795\pm0.017$ & $0.803\pm0.012$ \\\cline{2-5}
+    & Bypass & $0.938\pm0.001$ & $0.800\pm0.008$ & $0.810\pm0.013$ \\\cline{2-5}
+    & GC & $0.905\pm0.004$ & $0.825\pm0.013$ & $\mathbf{0.829\pm0.006}$ \\\cline{2-5}
+    & Weave & $0.875\pm0.004$ & $\mathbf{0.828\pm0.008}$ & $0.820\pm0.010$ \\\cline{2-5}
+    \hline
+    \hline    
+    \multirow{8}{*}{ToxCast}
+    & Logreg & $0.828\pm0.016$ & $0.611\pm0.024$ & $0.605\pm0.003$ \\\cline{2-5}
+    & KernelSVM & $0.905\pm0.012$ & $0.674\pm0.013$ & $0.669\pm0.014$ \\\cline{2-5}
+    & XGBoost & $0.764\pm0.004$ & $0.641\pm0.009$ & $0.640\pm0.005$ \\\cline{2-5}
+    & IRV & $0.663\pm0.004$ & $0.660\pm0.009$ & $0.663\pm0.015$ \\\cline{2-5}
+    & Multitask & $0.887\pm0.002$ & $0.705\pm0.017$ & $0.702\pm0.013$ \\\cline{2-5}
+    & Bypass & $0.793\pm0.002$ & $0.684\pm0.016$ & $0.676\pm0.005$ \\\cline{2-5}
+    & GC & $0.815\pm0.003$ & $0.709\pm0.013$ & $0.716\pm0.014$ \\\cline{2-5}
+    & Weave & $0.830\pm0.006$ & $\mathbf{0.750\pm0.007}$ & $\mathbf{0.742\pm0.003}$ \\\cline{2-5}
+    \hline
+    \hline    
+    \multirow{9}{*}{SIDER}
+    & Logreg & $0.918\pm0.001$ & $0.635\pm0.018$ & $0.643\pm0.011$ \\\cline{2-5}
+    & KernelSVM & $0.984\pm0.021$ & $0.655\pm0.030$ & $0.682\pm0.013$ \\\cline{2-5}
+    & XGBoost & $0.854\pm0.016$ & $0.645\pm0.038$ & $0.656\pm0.027$ \\\cline{2-5}
+    & RF & $1.000\pm0.000$ & $0.650\pm0.013$ & $\mathbf{0.684\pm0.009}$ \\\cline{2-5}
+    & IRV & $0.628\pm0.004$ & $\mathbf{0.657\pm0.028}$ & $0.640\pm0.020$ \\\cline{2-5}
+    & Multitask & $0.790\pm0.007$ & $0.632\pm0.040$ & $0.666\pm0.026$ \\\cline{2-5}
+    & Bypass & $0.852\pm0.001$ & $0.644\pm0.035$ & $0.673\pm0.025$ \\\cline{2-5}
+    & GC & $0.735\pm0.013$ & $0.609\pm0.021$ & $0.638\pm0.012$ \\\cline{2-5}
+    & Weave & $0.647\pm0.015$ & $0.591\pm0.031$ & $0.581\pm0.027$ \\\cline{2-5}
+    \hline
+    \hline    
+    \multirow{9}{*}{ClinTox}
+    & Logreg & $0.990\pm0.001$ & $0.732\pm0.065$ & $0.722\pm0.039$ \\\cline{2-5}
+    & KernelSVM & $0.994\pm0.002$ & $0.614\pm0.195$ & $0.669\pm0.092$ \\\cline{2-5}
+    & XGBoost & $0.926\pm0.008$ & $0.729\pm0.140$ & $0.799\pm0.050$ \\\cline{2-5}
+    & RF & $0.996\pm0.001$ & $0.688\pm0.107$ & $0.713\pm0.056$ \\\cline{2-5}
+    & IRV & $0.804\pm0.004$ & $0.748\pm0.075$ & $0.770\pm0.072$ \\\cline{2-5}
+    & Multitask & $0.917\pm0.002$ & $0.711\pm0.186$ & $0.778\pm0.055$ \\\cline{2-5}
+    & Bypass & $0.943\pm0.004$ & $0.734\pm0.111$ & $0.827\pm0.051$ \\\cline{2-5}
+    & GC & $0.962\pm0.005$ & $\mathbf{0.920\pm0.035}$ & $0.807\pm0.047$ \\\cline{2-5}
+    & Weave & $0.948\pm0.013$ & $0.875\pm0.066$ & $\mathbf{0.832\pm0.037}$ \\\cline{2-5}
+    \hline
+    \end{tabular}
+    \label{tab:BBBP_Tox21_ToxCast_SIDER}
+\end{table}
+    
+\begin{table}[H]
+    \small
+    \centering
+    \caption{PDBbind Performances (Root-Mean-Square Error)}
+    \begin{tabular}{ |c|c|c|c|c| } 
+    \hline
+    \textbf{Model} & \textbf{Model} & \textbf{Training} & \textbf{Validation} & \textbf{Test} \\
+    \hline
+    \hline    
+    \multirow{5}{*}{PDBbind - core}
+    & RF & $0.82\pm0.00$ & $2.02\pm0.02$ & $2.03\pm0.01$ \\\cline{2-5}
+    & RF(grid) & $0.73\pm0.01$ & $1.98\pm0.01$ & $2.27\pm0.01$ \\\cline{2-5}
+    & Multitask & $1.62\pm0.03$ & $\mathbf{1.86\pm0.01}$ & $2.21\pm0.02$ \\\cline{2-5}
+    & Multitask(grid) & $1.51\pm0.05$ & $1.92\pm0.02$ & $2.20\pm0.03$ \\\cline{2-5}
+    & GC & $1.42\pm0.04$ & $2.10\pm0.05$ & $\mathbf{1.92\pm0.07}$ \\\cline{2-5}
+    \hline
+    \hline    
+    \multirow{5}{*}{PDBbind - refined}
+    & RF & $0.66\pm0.00$ & $1.48\pm0.00$ & $1.62\pm0.00$ \\\cline{2-5}
+    & RF(grid) & $0.51\pm0.00$ & $\mathbf{1.37\pm0.00}$ & $\mathbf{1.38\pm0.00}$ \\\cline{2-5}
+    & Multitask & $1.09\pm0.01$ & $1.53\pm0.03$ & $1.66\pm0.05$ \\\cline{2-5}
+    & Multitask(grid) & $0.55\pm0.02$ & $1.41\pm0.02$ & $1.46\pm0.05$ \\\cline{2-5}
+    & GC & $1.20\pm0.01$ & $1.55\pm0.05$ & $1.65\pm0.03$ \\\cline{2-5}
+    \hline
+    \hline    
+    \multirow{5}{*}{PDBbind - full}
+    & RF & $0.66\pm0.00$ & $1.40\pm0.00$ & $1.31\pm0.00$ \\\cline{2-5}
+    & RF(grid) & $0.51\pm0.00$ & $\mathbf{1.35\pm0.00}$ & $\mathbf{1.25\pm0.00}$ \\\cline{2-5}
+    & Multitask & $1.52\pm0.17$ & $1.42\pm0.05$ & $1.45\pm0.14$ \\\cline{2-5}
+    & Multitask(grid) & $0.39\pm0.01$ & $1.40\pm0.03$ & $1.28\pm0.02$ \\\cline{2-5}
+    & GC & $1.65\pm0.10$ & $1.57\pm0.20$ & $1.44\pm0.12$ \\\cline{2-5}
+    \hline
+    \end{tabular}
+    \label{tab:PDBbind}
+\end{table}
+    
+    
+    
+\begin{table}[H]
+    \small
+    \centering
+    \caption{ESOL, FreeSolv, Lipophilicity Performances (Root-Mean-Square Error)}
+    \begin{tabular}{ |c|c|c|c|c| } 
+    \hline
+    \textbf{Model} & \textbf{Model} & \textbf{Training} & \textbf{Validation} & \textbf{Test} \\
+    \hline
+    \hline    
+    \multirow{8}{*}{ESOL}
+    & RF & $0.51\pm0.01$ & $1.16\pm0.15$ & $1.07\pm0.19$ \\\cline{2-5}
+    & Multitask & $0.59\pm0.04$ & $1.17\pm0.13$ & $1.12\pm0.15$ \\\cline{2-5}
+    & XGBoost & $0.51\pm0.08$ & $1.05\pm0.10$ & $0.99\pm0.14$ \\\cline{2-5}
+    & KRR & $0.38\pm0.01$ & $1.65\pm0.19$ & $1.53\pm0.06$ \\\cline{2-5}
+    & GC & $0.43\pm0.20$ & $1.05\pm0.15$ & $0.97\pm0.01$ \\\cline{2-5}
+    & DAG & $0.32\pm0.03$ & $0.74\pm0.04$ & $0.82\pm0.08$ \\\cline{2-5}
+    & Weave & $0.34\pm0.04$ & $0.57\pm0.04$ & $0.61\pm0.07$ \\\cline{2-5}
+    & MPNN & $0.25\pm0.06$ & $\mathbf{0.55\pm0.02}$ & $\mathbf{0.58\pm0.03}$ \\\cline{2-5}
+    \hline
+    \hline    
+    \multirow{8}{*}{FreeSolv}
+    & RF & $0.80\pm0.03$ & $2.12\pm0.68$ & $2.03\pm0.22$ \\\cline{2-5}
+    & Multitask & $1.07\pm0.06$ & $1.95\pm0.41$ & $1.87\pm0.07$ \\\cline{2-5}
+    & XGBoost & $0.85\pm0.12$ & $1.76\pm0.21$ & $1.74\pm0.15$ \\\cline{2-5}
+    & KRR & $0.31\pm0.03$ & $2.10\pm0.12$ & $2.11\pm0.07$ \\\cline{2-5}
+    & GC & $0.31\pm0.09$ & $1.35\pm0.15$ & $1.40\pm0.16$ \\\cline{2-5}
+    & DAG & $0.49\pm0.46$ & $1.48\pm0.15$ & $1.63\pm0.18$ \\\cline{2-5}
+    & Weave & $0.32\pm0.04$ & $\mathbf{1.19\pm0.08}$ & $1.22\pm0.28$ \\\cline{2-5}
+    & MPNN & $0.31\pm0.05$ & $1.20\pm0.02$ & $\mathbf{1.15\pm0.12}$ \\\cline{2-5}
+    \hline
+    \hline    
+    \multirow{8}{*}{Lipophilicity}
+    & RF & $0.318\pm0.006$ & $0.835\pm0.036$ & $0.876\pm0.040$ \\\cline{2-5}
+    & Multitask & $0.385\pm0.065$ & $0.852\pm0.048$ & $0.859\pm0.013$ \\\cline{2-5}
+    & XGBoost & $0.135\pm0.012$ & $0.783\pm0.021$ & $0.799\pm0.054$ \\\cline{2-5}
+    & KRR & $0.180\pm0.002$ & $0.889\pm0.009$ & $0.899\pm0.043$ \\\cline{2-5}
+    & GC & $0.471\pm0.001$ & $\mathbf{0.678\pm0.040}$ & $\mathbf{0.655\pm0.036}$ \\\cline{2-5}
+    & DAG & $0.173\pm0.026$ & $0.857\pm0.050$ & $0.835\pm0.039$ \\\cline{2-5}
+    & Weave & $0.549\pm0.051$ & $0.734\pm0.011$ & $0.715\pm0.035$ \\\cline{2-5}
+    & MPNN & $0.363\pm0.043$ & $0.757\pm0.030$ & $0.719\pm0.031$ \\\cline{2-5}
+    \hline
+    \end{tabular}
+    \label{tab:ESOL_FreeSolv_Lipo}
+\end{table}
+
+\begin{table}[H]
+    \small
+    \centering
+    \caption{QM7, QM7b, QM8 and QM9 Performances (Mean Absolute Error)}
+    \begin{tabular}{ |c|c|c|c|c| } 
+    \hline
+    \textbf{Model} & \textbf{Model} & \textbf{Training} & \textbf{Validation} & \textbf{Test} \\
+    \hline
+    \hline    
+    \multirow{8}{*}{QM7}
+    & RF & $47.1\pm0.1$ & $124.0\pm4.6$ & $122.7\pm4.2$ \\\cline{2-5}
+    & Multitask & $101.8\pm13.7$ & $121.7\pm7.5$ & $123.7\pm15.6$ \\\cline{2-5}
+    & KRR & $65.5\pm0.3$ & $108.3\pm5.4$ & $110.3\pm4.7$ \\\cline{2-5}
+    & GC & $67.8\pm4.0$ & $77.9\pm10.0$ & $77.9\pm2.1$ \\\cline{2-5}
+    & Multitask(CM) & $10.4\pm1.8$ & $11.0\pm1.7$ & $10.8\pm1.3$ \\\cline{2-5}
+    & KRR(CM) & $0.1\pm0.0$ & $9.9\pm0.1$ & $10.2\pm0.3$ \\\cline{2-5}
+    & DTNN & $8.2\pm3.9$ & $\mathbf{8.9\pm3.7}$ & $\mathbf{8.8\pm3.5}$ \\\cline{2-5}
+    & ANI-1 & $24.7\pm1.2$ & $27.7\pm1.2$ & $27.8\pm0.7$ \\\cline{2-5}
+    \hline
+    \hline
+    \multirow{3}{*}{QM7b}
+    & Multitask(CM) & $2.95\pm0.70$ & $2.90\pm0.82$ & $2.89\pm0.65$ \\\cline{2-5}
+    & KRR(CM) & $0.01\pm0.00$ & $\mathbf{1.08\pm0.08}$ & $\mathbf{1.05\pm0.06}$ \\\cline{2-5}
+    & DTNN & $1.68\pm0.18$ & $1.79\pm0.14$ & $1.77\pm0.17$ \\\cline{2-5}
+    \hline
+    \hline    
+    \multirow{7}{*}{QM8}
+    & Multitask & $0.0081\pm0.0002$ & $0.0155\pm0.0005$ & $0.0150\pm0.0005$ \\\cline{2-5}
+    & KRR & $0.0152\pm0.0001$ & $0.0197\pm0.0004$ & $0.0195\pm0.0003$ \\\cline{2-5}
+    & GC & $0.0123\pm0.0009$ & $0.0150\pm0.0006$ & $0.0148\pm0.0006$ \\\cline{2-5}
+    & Multitask(CM) & $0.0163\pm0.0010$ & $0.0181\pm0.0012$ & $0.0179\pm0.0013$ \\\cline{2-5}
+    & KRR(CM) & $0.0002\pm0.0000$ & $0.0242\pm0.0003$ & $0.0238\pm0.0004$ \\\cline{2-5}
+    & DTNN & $0.0140\pm0.0009$ & $0.0170\pm0.0007$ & $0.0169\pm0.0009$ \\\cline{2-5}
+    & MPNN & $0.0128\pm0.0010$ & $\mathbf{0.0146\pm0.0010}$ & $\mathbf{0.0143\pm0.0011}$ \\\cline{2-5}
+    \hline
+    \hline    
+    \multirow{5}{*}{QM9}
+    & Multitask & $15.3\pm0.2$ & $15.9\pm0.2$ & $16.0\pm0.2$ \\\cline{2-5}
+    & GC & $4.6\pm0.5$ & $4.7\pm0.5$ & $4.7\pm0.5$ \\\cline{2-5}
+    & Multitask(CM) & $4.3\pm1.0$ & $4.3\pm1.1$ & $4.4\pm1.0$ \\\cline{2-5}
+    & DTNN & $2.3\pm1.1$ & $\mathbf{2.4\pm1.1}$ & $\mathbf{2.4\pm1.1}$ \\\cline{2-5}
+    & MPNN & $3.2\pm1.5$ & $3.2\pm1.5$ & $3.2\pm1.5$ \\\cline{2-5}
+    \hline
+    \end{tabular}
+    \label{tab:QM7_QM7b_QM8_QM9}
+\end{table}
+
+\begin{table}[H]
+    \small
+    \centering
+    \caption{QM7b Test Set Performances of All Tasks(Mean Absolute Error)}
+    \begin{tabular}{ |c|c|c|c| } 
+    \hline
+    \textbf{Task} & Multitask(CM) & KRR(CM) & DTNN \\
+    \hline
+    \hline    
+    Atomization energy - PBE0 & $36.0$ & $\mathbf{9.3}$ & $21.5$\\
+    \hline    
+    Excitation energy of maximal optimal absorption - ZINDO & $1.31$ & $1.83$ & $\mathbf{1.26}$\\
+    \hline    
+    Highest absorption - ZINDO & $0.086$ & $0.098$ & $\mathbf{0.074}$\\
+    \hline
+    HOMO - ZINDO & $0.293$ & $0.369$ & $\mathbf{0.192}$\\
+    \hline
+    LUMO - ZINDO & $0.255$ & $0.361$ & $\mathbf{0.159}$\\
+    \hline
+    1st excitation energy - ZINDO & $0.368$ & $0.479$ & $\mathbf{0.296}$\\
+    \hline
+    Ionization potential - ZINDO & $0.305$ & $0.408$ & $\mathbf{0.214}$\\
+    \hline
+    Electron Affinity - ZINDO & $0.271$ & $0.404$ & $\mathbf{0.174}$\\
+    \hline
+    HOMO - KS & $0.247$ & $0.272$ & $\mathbf{0.155}$\\
+    \hline
+    LUMO - KS & $0.187$ & $0.239$ & $\mathbf{0.129}$\\
+    \hline
+    HOMO - GW & $0.270$ & $0.294$ & $\mathbf{0.166}$\\
+    \hline
+    LUMO - GW & $0.172$ & $0.236$ & $\mathbf{0.139}$\\
+    \hline
+    Polarizability - PBE0 & $0.335$ & $0.225$ & $\mathbf{0.173}$\\
+    \hline
+    Polarizability - SCS & $0.317$ & $\mathbf{0.116}$ & $0.149$\\
+    \hline
+    \end{tabular}
+    \label{tab:QM7b}
+\end{table}
+
+\begin{table}[H]
+    \small
+    \centering
+    \caption{QM8 Test Set Performances of All Tasks(Mean Absolute Error)}
+    \begin{tabular}{ |c|c|c|c|c|c|c|c| } 
+    \hline
+    \textbf{Task} & Multitask & GC & KRR & Multitask(CM) & KRR(CM) & DTNN & MPNN\\
+    \hline
+    \hline    
+    E1 - CC2 & $0.0088$ & $\mathbf{0.0074}$ & $0.0115$ & $0.0125$ & $0.0137$ & $0.0092$ & $0.0084$\\
+    \hline    
+    E2 - CC2 & $0.0098$ & $\mathbf{0.0085}$ & $0.0116$ & $0.0114$ & $0.0124$ & $0.0092$ & $0.0091$\\
+    \hline    
+    f1 - CC2 & $\mathbf{0.0145}$ & $0.0175$ & $0.0202$ & $0.0186$ & $0.0272$ & $0.0182$ & $0.0151$\\
+    \hline
+    f2 - CC2 & $0.0320$ & $0.0328$ & $0.0387$ & $0.0358$ & $0.0460$ & $0.0377$ & $\mathbf{0.0314}$\\
+    \hline    
+    E1 - PBE0 & $0.0089$ & $\mathbf{0.0076}$ & $0.0118$ & $0.0126$ & $0.0140$ & $0.0090$ & $0.0083$\\
+    \hline    
+    E2 - PBE0 & $0.0096$ & $\mathbf{0.0083}$ & $0.0117$ & $0.0114$ & $0.0122$ & $0.0086$ & $0.0086$\\
+    \hline    
+    f1 - PBE0 & $\mathbf{0.0121}$ & $0.0125$ & $0.0189$ & $0.0152$ & $0.0258$ & $0.0155$ & $0.0123$\\
+    \hline
+    f2 - PBE0 & $0.0252$ & $0.0246$ & $0.0319$ & $0.0267$ & $0.0376$ & $0.0281$ & $\mathbf{0.0236}$\\
+    \hline    
+    E1 - CAM & $0.0083$ & $\mathbf{0.0070}$ & $0.0111$ & $0.0119$ & $0.0132$ & $0.0086$ & $0.0079$\\
+    \hline    
+    E2 - CAM & $0.0090$ & $\mathbf{0.0076}$ & $0.0109$ & $0.0106$ & $0.0115$ & $0.0082$ & $0.0082$\\
+    \hline    
+    f1 - CAM & $0.0140$ & $0.0153$ & $0.0208$ & $0.0177$ & $0.0304$ & $0.0180$ & $\mathbf{0.0134}$\\
+    \hline
+    f2 - CAM & $0.0274$ & $0.0285$ & $0.0345$ & $0.0303$ & $0.0417$ & $0.0322$ & $\mathbf{0.0258}$\\
+    \hline
+    \end{tabular}
+    \label{tab:QM8}
+\end{table}
+
+\begin{table}[H]
+    \small
+    \centering
+    \caption{QM9 Test Set Performances of All Tasks(Mean Absolute Error)}
+    \begin{tabular}{ |c|c|c|c|c|c| } 
+    \hline
+    \textbf{Task} & Multitask & Multitask(CM) & GC  & DTNN & MPNN\\
+    \hline
+    \hline    
+    mu  & $0.602$ & $0.519$ & $0.583$ & $\mathbf{0.244}$ & $0.358$\\
+    \hline    
+    alpha  & $3.10$ & $\mathbf{0.85}$ & $1.37$ & $0.95$ & $0.89$\\
+    \hline    
+    HOMO  & $0.00660$ & $0.00506$ & $0.00716$ & $\mathbf{0.00388}$ & $0.00541$\\
+    \hline
+    LUMO  & $0.00854$ & $0.00645$ & $0.00921$ & $\mathbf{0.00513}$ & $0.00623$\\
+    \hline    
+    gap  & $0.0100$ & $0.0086$ & $0.0112$ & $\mathbf{0.0066}$ & $0.0082$\\
+    \hline    
+    R2  & $125.7$ & $46.0$ & $35.9$ & $\mathbf{17.0}$ & $28.5$\\
+    \hline    
+    ZPVE  & $0.01109$ & $0.00207$ & $0.00299$ & $\mathbf{0.00172}$ & $0.00216$\\
+    \hline
+    U0  & $15.10$ & $2.27$ & $3.41$ & $2.43$ & $\mathbf{2.05}$\\
+    \hline    
+    U  & $15.10$ & $2.27$ & $3.41$ & $2.43$ & $\mathbf{2.00}$\\
+    \hline    
+    H  & $15.10$ & $2.27$ & $3.41$ & $2.43$ & $\mathbf{2.02}$\\
+    \hline    
+    G  & $15.10$ & $2.27$ & $3.41$ & $2.43$ & $\mathbf{2.02}$\\
+    \hline
+    Cv  & $1.77$ & $0.39$ & $0.65$ & $\mathbf{0.27}$ & $0.42$\\
+    \hline
+    \end{tabular}
+    \label{tab:QM9}
+\end{table}
+
+\subsection{Grid Featurizer}
+
+In our implementation, we generate a vector with length 2052 for each pair of ligand and protein. Detailed process listed below:
+
+First, binding pocket atoms of the protein are extracted using a distance cutoff of 4.5 \AA. In this process, atom in the protein will be extracted only if it locates within this distance from any atom in the ligand molecule. 
+
+Intra-ligand and intra-protein fingerprints are generated (using the ordinary circular fingerprint with radius of 2) respectively on the atoms from the ligand and atoms in the binding pocket of the protein, and then hashed together to form a vector of length 512.
+
+Then we form three different sets of contacting atom pairs between ligand and protein, whose intra-pair distance falls within bins: $0\sim2$ \AA, $2\sim3$ \AA and $3\sim4.5$ \AA. Each set of pairs is hashed into a fixed length fingerprint with length 512.
+
+Finally, salt bridges are counted, hydrogen bonds are counted in three different distance bins, forming the last four digits. In total the fingerprints have length of 2052.
+
+
+\subsection{ClinTox}
+
+The ClinTox dataset addresses clinical drug toxicity by providing a qualitative comparison of drugs approved by the FDA and those that have failed clinical trials for toxicity reasons. We compiled the FDA-approved drug names from annotations in the SWEETLEAD database. We compiled the names of drugs that failed clinical trials for toxicity reasons from the Aggregate Analysis of ClinicalTrials.gov (AACT) database. To identify these drug names, we relied on annotations from the clinical study table titled "clinical\_study\_noclob.txt" in the AACT database. From this table, we selected clinical trials where the overall status was "terminated," "suspended," or "withdrawn," and the explanation for the status included the terms "adverse," "toxic," or "death."
+
+\subsection{Dataset and model access}
+
+Table~\ref{tab:deepchem_command} listed DeepChem commands to load datasets and models in MoleculeNet. For more detailed instructions please refer to the docs and examples. Tutorial for building customized datasets can be found at \url{https://github.com/deepchem/deepchem/blob/master/examples/notebooks/dataset_preparation.ipynb}
+
+\begin{table}[H]
+    \centering
+    \small
+    \caption{DeepChem commands to load MoleculeNet datasets and models}
+    \begin{tabular}{ |c|l| } 
+    \hline
+    \textbf{Dataset} & \textbf{Command}\\
+    \hline
+    QM7 & {\fontfamily{pcr}\selectfont deepchem.molnet.load\_qm7\_from\_mat}\\
+    \hline
+    QM7b & {\fontfamily{pcr}\selectfont deepchem.molnet.load\_qm7b\_from\_mat}\\
+    \hline
+    QM8 & {\fontfamily{pcr}\selectfont deepchem.molnet.load\_qm8}\\
+    \hline
+    QM9 & {\fontfamily{pcr}\selectfont deepchem.molnet.load\_qm9}\\
+    \hline
+    ESOL & {\fontfamily{pcr}\selectfont deepchem.molnet.load\_delaney}\\
+    \hline
+    FreeSolv & {\fontfamily{pcr}\selectfont deepchem.molnet.load\_sampl}\\
+    \hline
+    Lipophilicity & {\fontfamily{pcr}\selectfont deepchem.molnet.load\_lipo}\\
+    \hline
+    PCBA & {\fontfamily{pcr}\selectfont deepchem.molnet.load\_pcba}\\
+    \hline
+    MUV & {\fontfamily{pcr}\selectfont deepchem.molnet.load\_muv}\\
+    \hline
+    HIV & {\fontfamily{pcr}\selectfont deepchem.molnet.load\_hiv}\\
+    \hline
+    BACE & {\fontfamily{pcr}\selectfont deepchem.molnet.load\_bace\_classification}\\
+    \hline
+    PDBbind & {\fontfamily{pcr}\selectfont deepchem.molnet.load\_pdbbind\_grid}\\
+    \hline
+    BBBP & {\fontfamily{pcr}\selectfont deepchem.molnet.load\_bbbp}\\
+    \hline
+    Tox21 & {\fontfamily{pcr}\selectfont deepchem.molnet.load\_tox21}\\
+    \hline
+    ToxCast & {\fontfamily{pcr}\selectfont deepchem.molnet.load\_toxcast}\\
+    \hline
+    SIDER & {\fontfamily{pcr}\selectfont deepchem.molnet.load\_sider}\\
+    \hline
+    ClinTox & {\fontfamily{pcr}\selectfont deepchem.molnet.load\_clintox}\\
+    \hline
+    \hline
+    \textbf{Model} & \textbf{Command} \\
+    \hline
+    Logreg & {\fontfamily{pcr}\selectfont deepchem.models.TensorflowLogisticRegression} \\
+    \hline
+    KernelSVM$^a$ & {\fontfamily{pcr}\selectfont sklearn.svm.SVC} \\
+    \hline
+    KRR$^a$ & {\fontfamily{pcr}\selectfont sklearn.kernel\_ridge.KernelRidge} \\
+    \hline
+    \multirow{2}{*}{RF$^a$} & {\fontfamily{pcr}\selectfont sklearn.ensemble.RandomForestClassifier} \\
+    & {\fontfamily{pcr}\selectfont sklearn.ensemble.RandomForestRegressor} \\
+    \hline
+    XGBoost$^b$ & {\fontfamily{pcr}\selectfont deepchem.models.xgboost\_models.XGBoostModel} \\ 
+    \hline
+    \multirow{2}{*}{Multitask/Singletask} & {\fontfamily{pcr}\selectfont deepchem.models.TensorflowMultiTaskClassifier} \\
+    & {\fontfamily{pcr}\selectfont deepchem.models.TensorflowMultiTaskRegressor} \\
+    \hline
+    Bypass & {\fontfamily{pcr}\selectfont deepchem.models.RobustMultitaskClassifier} \\
+    \hline
+    IRV & {\fontfamily{pcr}\selectfont deepchem.models.TensorflowMultiTaskIRVClassifier} \\
+    \hline
+    \multirow{2}{*}{GC$^c$} & {\fontfamily{pcr}\selectfont deepchem.nn.SequentialGraph} \\
+    & {\fontfamily{pcr}\selectfont deepchem.models.GraphConvTensorGraph} \\
+    \hline
+    \multirow{2}{*}{Weave$^c$} & {\fontfamily{pcr}\selectfont deepchem.nn.AlternateSequentialWeaveGraph} \\
+    & {\fontfamily{pcr}\selectfont deepchem.models.WeaveTensorGraph}\\
+    \hline
+    \multirow{2}{*}{DAG$^c$} & {\fontfamily{pcr}\selectfont deepchem.nn.SequentialDAGGraph} \\
+    & {\fontfamily{pcr}\selectfont deepchem.models.DAGTensorGraph}\\
+    \hline
+    \multirow{2}{*}{DTNN$^c$} & {\fontfamily{pcr}\selectfont deepchem.nn.SequentialDTNNGraph} \\
+    & {\fontfamily{pcr}\selectfont deepchem.models.DTNNTensorGraph}\\
+    \hline
+    MPNN & {\fontfamily{pcr}\selectfont deepchem.models.MPNNTensorGraph}\\
+    \hline
+    \end{tabular}
+    \begin{tablenotes}
+        \item {$^a$} These models are based on scikit-learn package.\cite{sklearn}
+        \item {$^b$} XGBoost is based on xgboost package.\cite{xgb}
+        \item {$^c$} These models are implemented in two frameworks, with identical underlying structures and performances. All benchmark numbers are run with {\fontfamily{pcr}\selectfont deepchem.nn.SequentialGraph} series model
+    \end{tablenotes}
+    \label{tab:deepchem_command}
+\end{table}
+
+\subsection{Model validation}
+MoleculeNet includes multiple models that are previously proposed. To validate our reimplementation, here we compare the performances of our implementation with reported values in previous papers. All model validation scripts and trained models can be found in DeepChem.
+
+Note that performances of our models might be different from values in the benchmark tables due to no limitation imposed on running time(more epochs), different random splitting patterns, etc.
+
+\subsubsection{Graph Convolutional models}
+
+We evaluate the model on ESOL dataset, note that we provide performances based on a 80/10/10 random train, valid, test splitting, while the original paper reported performance under cross validation.\cite{graphconv_feat}
+~\\\\
+RMSE in logS(log solubility in mol per litre):
+\begin{itemize}
+    \item Original result: $0.52\pm0.07$
+    \item Reimplementation: $0.39$ for valid subset, $0.31$ for test subset
+\end{itemize}
+
+\subsubsection{Directed Acyclic Graph models}
+
+We evaluate the model on ESOL dataset with the same splitting pattern, the original paper reported performance under 10-fold cross validation.\cite{lusci2013deep}
+~\\\\
+RMSE in logS(log solubility in mol per litre):
+\begin{itemize}
+    \item Original result: $0.58\pm0.07$
+    \item Reimplementation: $0.68$ for valid subset, $0.58$ for test subset
+\end{itemize}
+
+\subsubsection{Weave models}
+
+We evaluate the model on Tox21 dataset, using 80/10/10 random train, valid, test splitting. The original paper reported performance as median score of 5-fold cross validation.\cite{kearnes2016graphconv}
+~\\\\
+mean ROC-AUC:
+\begin{itemize}
+    \item Original result: $0.846\sim0.867$ for different model structure settings.
+    \item Reimplementation: $0.857$ for valid subset, $0.843$ for test subset
+\end{itemize}
+
+\subsubsection{Deep Tensor Neural Network}
+
+We evaluate the model on the atomization energy task of qm9, using 80/10/10 random train, valid, test splitting.(train subset with 106,400 samples) The original paper reported performance using different size of training set.\cite{schutt2016quantum}
+~\\\\
+MAE in kcal/mol:
+\begin{itemize}
+    \item Original result: $0.93\pm0.02$ with 2 DTNN layers and 100,000 training samples.
+    \item Reimplementation: $1.15$ for valid subset, $1.26$ for test subset
+\end{itemize}
+
+\subsubsection{Message Passing Neural Network}
+
+We evaluate the model on the HOMO-LUMO gap task of qm9, using 80/10/10 random train, valid, test splitting.(train subset with 106,400 samples) The original paper reported performance with a training set containing 110,462 randomly picked samples.\cite{MPNN} Due to that no hyperparameter is specified for the model, we are not able to fully repeat the results.
+
+Note that the original paper trained a single model for each task in the qm9 dataset. Here we only picked one representative task to compare. 
+~\\\\
+MAE in eV:
+\begin{itemize}
+    \item Original result: $0.0544$
+    \item Reimplementation: $0.0997$ for valid subset, $0.101$ for test subset
+\end{itemize}
+
+\subsubsection{Influence Relevance Voting}
+
+We evaluate the model on the HIV dataset, using 80/10/10 random train, valid, test splitting. The original paper reported performance under 10-fold cross validation.\cite{IRV}
+~\\\\
+ROC-AUC:
+\begin{itemize}
+    \item Original result: $0.845$
+    \item Reimplementation: $0.840$ for valid subset, $0.852$ for test subset
+\end{itemize}
+
+%\bibliography{rsc}
+%\bibliographystyle{rsc}
+
+%\end{document}

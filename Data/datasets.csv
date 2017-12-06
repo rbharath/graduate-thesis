@@ -1,0 +1,260 @@
+Dataset,Actives,Inactives,Target Class,Target
+pcba-aid411*,1562,69734,other enzyme,luciferase
+pcba-aid875,32,73870,protein-protein interaction,brca1-bach1
+pcba-aid881,589,106656,other enzyme,15hLO-2
+pcba-aid883,1214,8170,other enzyme,CYP2C9
+pcba-aid884,3391,9676,other enzyme,CYP3A4
+pcba-aid885,163,12904,other enzyme,CYP3A4
+pcba-aid887,1024,72140,other enzyme,15hLO-1
+pcba-aid891,1548,7836,other enzyme,CYP2D6
+pcba-aid899,1809,7575,other enzyme,CYP2C19
+pcba-aid902*,1872,123512,viability,H1299-p53A138V
+pcba-aid903*,338,54175,viability,H1299-neo
+pcba-aid904*,528,53981,viability,H1299-neo
+pcba-aid912,445,68506,miscellaneous,anthrax LF-PA internalization
+pcba-aid914,218,10619,transcription factor,HIF-1
+pcba-aid915,436,10401,transcription factor,HIF-1
+pcba-aid924*,1146,122867,viability,H1299-p53A138V
+pcba-aid925,39,64358,miscellaneous,EGFP-654
+pcba-aid926,350,71666,GPCR,TSHR
+pcba-aid927*,61,59108,protease,USP2a
+pcba-aid938,1775,70241,ion channel,CNG
+pcba-aid995*,699,70189,signalling pathway,ERK1/2 cascade
+pcba-aid1030,15963,200920,other enzyme,ALDH1A1
+pcba-aid1379*,562,198500,other enzyme,luciferase
+pcba-aid1452,177,151634,other enzyme,12hLO
+pcba-aid1454*,536,130788,signalling pathway,ERK1/2 cascade
+pcba-aid1457,722,204859,other enzyme,IMPase
+pcba-aid1458,5805,202680,miscellaneous,SMN2
+pcba-aid1460*,5662,261757,protein-protein interaction,K18
+pcba-aid1461,2305,218561,GPCR,NPSR
+pcba-aid1468*,1039,270371,protein-protein interaction,K18
+pcba-aid1469,169,276098,protein-protein interaction,TRb-SRC2
+pcba-aid1471,288,223321,protein-protein interaction,huntingtin
+pcba-aid1479,788,275479,miscellaneous,TRb-SRC2
+pcba-aid1631,892,262774,other enzyme,hPK-M2
+pcba-aid1634,154,263512,other enzyme,hPK-M2
+pcba-aid1688,2374,218200,protein-protein interaction,HTTQ103
+pcba-aid1721,1087,291649,other enzyme,LmPK
+pcba-aid2100*,1159,301145,other enzyme,alpha-glucosidase
+pcba-aid2101*,285,321268,other enzyme,glucocerebrosidase
+pcba-aid2147,3477,223441,other enzyme,JMJD2E
+pcba-aid2242*,715,198459,other enzyme,alpha-glucosidase
+pcba-aid2326,1069,268500,miscellaneous,influenza A NS1
+pcba-aid2451,2008,285737,other enzyme,FBPA
+pcba-aid2517,1136,344762,other enzyme,APE1
+pcba-aid2528,660,347283,other enzyme,BLM
+pcba-aid2546,10550,293509,transcription factor,VP16
+pcba-aid2549,1210,233706,other enzyme,RECQ1
+pcba-aid2551,16666,288772,transcription factor,ROR gamma
+pcba-aid2662,110,293953,miscellaneous,MLL-HOX-A
+pcba-aid2675,99,279333,miscellaneous,MBNL1-CUG
+pcba-aid2676,1081,361124,GPCR,RXFP1
+pcba-aid463254*,41,330640,protease,USP2a
+pcba-aid485281,254,341253,miscellaneous,apoferritin
+pcba-aid485290,942,343503,other enzyme,TDP1
+pcba-aid485294*,148,362056,other enzyme,AmpC
+pcba-aid485297,9126,311481,promoter,Rab9
+pcba-aid485313,7567,313119,promoter,NPC1
+pcba-aid485314,4491,329974,other enzyme,DNA polymerase beta
+pcba-aid485341*,1729,328952,other enzyme,AmpC
+pcba-aid485349,618,321745,protein kinase,ATM
+pcba-aid485353,603,328042,protease,PLP
+pcba-aid485360,1485,223830,protein-protein interaction,L3MBTL1
+pcba-aid485364,10700,345950,other enzyme,TGR
+pcba-aid485367,557,330124,other enzyme,PFK
+pcba-aid492947,80,330601,GPCR,beta2-AR
+pcba-aid493208,342,43647,protein kinase,mTOR
+pcba-aid504327,759,380820,other enzyme,GCN5L2
+pcba-aid504332,30586,317753,other enzyme,G9a
+pcba-aid504333,15670,341165,protein-protein interaction,BAZ2B
+pcba-aid504339,16857,367661,protein-protein interaction,JMJD2A
+pcba-aid504444,7390,353475,transcription factor,Nrf2
+pcba-aid504466,4169,325944,viability,HEK293T-ELG1-luc
+pcba-aid504467,7647,322464,promoter,ELG1
+pcba-aid504706,201,321230,miscellaneous,p53
+pcba-aid504842,101,329517,other enzyme,Mm-CPN
+pcba-aid504845,104,385400,miscellaneous,RGS4
+pcba-aid504847,3515,390525,transcription factor,VDR
+pcba-aid504891,34,383652,other enzyme,Pin1
+pcba-aid540276*,4494,279673,miscellaneous,Marburg virus
+pcba-aid540317,2126,381226,protein-protein interaction,HP1-beta
+pcba-aid588342*,25034,335826,other enzyme,luciferase
+pcba-aid588453*,3921,382731,other enzyme,TrxR1
+pcba-aid588456*,51,386206,other enzyme,TrxR1
+pcba-aid588579,1987,393298,other enzyme,DNA polymerase kappa
+pcba-aid588590,3936,382117,other enzyme,DNA polymerase iota
+pcba-aid588591,4715,383994,other enzyme,DNA polymerase eta
+pcba-aid588795,1308,384951,other enzyme,FEN1
+pcba-aid588855,4894,398438,transcription factor,Smad3
+pcba-aid602179,364,387230,other enzyme,IDH1
+pcba-aid602233,165,380904,other enzyme,PGK
+pcba-aid602310,310,402026,protein-protein interaction,Vif-A3G
+pcba-aid602313,762,383076,protein-protein interaction,Vif-A3F
+pcba-aid602332,70,415773,promoter,GRP78
+pcba-aid624170,837,404440,other enzyme,GLS
+pcba-aid624171,1239,402621,transcription factor,Nrf2
+pcba-aid624173,488,406224,other enzyme,PYK
+pcba-aid624202,3968,372045,promoter,BRCA1
+pcba-aid624246,101,367273,miscellaneous,ERG
+pcba-aid624287,423,334388,signalling pathway,Gsgsp
+pcba-aid624288,1356,336077,signalling pathway,Gsgsp
+pcba-aid624291,222,345619,promoter,a7
+pcba-aid624296*,9841,333378,miscellaneous,DNA re-replication
+pcba-aid624297*,6214,336050,miscellaneous,DNA re-replication
+pcba-aid624417,6388,398731,GPCR,GLP-1
+pcba-aid651635,3784,387779,promoter,ATXN
+pcba-aid651644,748,361115,miscellaneous,Vpr
+pcba-aid651768,1677,362320,other enzyme,WRN
+pcba-aid651965,6422,331953,protease,ClpP
+pcba-aid652025,238,364365,signalling pathway,IL-2
+pcba-aid652104,7126,396566,miscellaneous,TDP-43
+pcba-aid652105,4072,324774,other enzyme,PI5P4K
+pcba-aid652106,496,368281,miscellaneous,alpha-synuclein
+pcba-aid686970,5949,358501,viability,HT-1080-NT
+pcba-aid686978*,62746,354086,viability,DT40-hTDP1
+pcba-aid686979*,48816,368048,viability,DT40-hTDP1
+pcba-aid720504,10170,353881,protein kinase,Plk1 PBD
+pcba-aid720532*,945,14532,miscellaneous,Marburg virus
+pcba-aid720542,733,363349,protein-protein interaction,AMA1-RON2
+pcba-aid720551*,1265,342387,ion channel,KCHN2 3.1
+pcba-aid720553*,3260,338810,ion channel,KCHN2 3.1
+pcba-aid720579*,1913,304815,miscellaneous,orthopoxvirus
+pcba-aid720580*,1508,324844,miscellaneous,orthopoxvirus
+pcba-aid720707,268,364332,other enzyme,EPAC1
+pcba-aid720708,661,363939,other enzyme,EPAC2
+pcba-aid720709,516,364084,other enzyme,EPAC1
+pcba-aid720711,290,364310,other enzyme,EPAC2
+pcba-aid743255,902,388656,protease,USP1/UAF1
+pcba-aid743266,306,405368,GPCR,PTHR1
+muv-aid466,30,14999,GPCR,S1P1 receptor
+muv-aid548,30,15000,protein kinase,PKA
+muv-aid600,30,14999,transcription factor,SF1
+muv-aid644,30,14998,protein kinase,Rho-Kinase2
+muv-aid652,30,15000,other enzyme,HIV RT-RNase
+muv-aid689,30,14999,other receptor,Eph rec. A4
+muv-aid692,30,15000,transcription factor,SF1
+muv-aid712*,30,14997,miscellaneous,HSP90
+muv-aid713*,30,15000,protein-protein interaction,ER-a-coact. bind.
+muv-aid733,30,15000,protein-protein interaction,ER-b-coact. bind.
+muv-aid737*,30,14999,protein-protein interaction,ER-a-coact. bind.
+muv-aid810*,30,14999,protein kinase,FAK
+muv-aid832,30,15000,protease,Cathepsin G
+muv-aid846,30,15000,protease,FXIa
+muv-aid852,30,15000,protease,FXIIa
+muv-aid858,30,14999,GPCR,D1 receptor
+muv-aid859,30,15000,GPCR,M1 receptor
+tox-NR-AhR,768,5780,transcription factor,Aryl hydrocarbon receptor
+tox-NR-AR-LBD*,237,6520,transcription factor,Androgen receptor
+tox-NR-AR*,309,6955,transcription factor,Androgen receptor
+tox-NR-Aromatase,300,5521,other enzyme,Aromatase
+tox-NR-ER-LBD*,350,6604,transcription factor,Estrogen receptor alpha
+tox-NR-ER*,793,5399,transcription factor,Estrogen receptor alpha
+tox-NR-PPAR-gamma*,186,6263,transcription factor,PPARg
+tox-SR-ARE,942,4889,miscellaneous,ARE
+tox-SR-ATAD5,264,6807,promoter,ATAD5
+tox-SR-HSE,372,6094,miscellaneous,HSE
+tox-SR-MMP,919,4891,miscellaneous,mitochondrial membrane potential
+tox-SR-p53,423,6351,miscellaneous,p53 signalling
+dude-aa2ar,482,31546,GPCR,Adenosine A2a receptor
+dude-abl1,182,10749,protein kinase,Tyrosine-protein kinase ABL
+dude-ace,282,16899,protease,Angiotensin-converting enzyme
+dude-aces,453,26240,other enzyme,Acetylcholinesterase
+dude-ada,93,5450,other enzyme,Adenosine deaminase
+dude-ada17,532,35900,protease,ADAM17
+dude-adrb1,247,15848,GPCR,Beta-1 adrenergic receptor
+dude-adrb2,231,14997,GPCR,Beta-2 adrenergic receptor
+dude-akt1,293,16441,protein kinase,Serine/threonine-protein kinase AKT
+dude-akt2,117,6899,protein kinase,Serine/threonine-protein kinase AKT2
+dude-aldr,159,8999,other enzyme,Aldose reductase
+dude-ampc,48,2850,other enzyme,Beta-lactamase
+dude-andr*,269,14350,transcription factor,Androgen Receptor
+dude-aofb,122,6900,other enzyme,Monoamine oxidase B
+dude-bace1,283,18097,protease,Beta-secretase 1
+dude-braf,152,9950,protein kinase,Serine/threonine-protein kinase B-raf
+dude-cah2,492,31168,other enzyme,Carbonic anhydrase II
+dude-casp3,199,10700,protease,Caspase-3
+dude-cdk2,474,27850,protein kinase,Cyclin-dependent kinase 2
+dude-comt,41,3850,other enzyme,Catechol O-methyltransferase
+dude-cp2c9,120,7449,other enzyme,Cytochrome P450 2C9
+dude-cp3a4,170,11800,other enzyme,Cytochrome P450 3A4
+dude-csf1r,166,12149,other receptor,Macrophage colony stimulating factor receptor
+dude-cxcr4,40,3406,GPCR,C-X-C chemokine receptor type 4
+dude-def,102,5700,other enzyme,Peptide deformylase
+dude-dhi1,330,19350,other enzyme,11-beta-hydroxysteroid dehydrogenase 1
+dude-dpp4,533,40943,protease,Dipeptidyl peptidase IV
+dude-drd3,480,34037,GPCR,Dopamine D3 receptor
+dude-dyr,231,17192,other enzyme,Dihydrofolate reductase
+dude-egfr,542,35047,other receptor,Epidermal growth factor receptor erbB1
+dude-esr1*,383,20675,transcription factor,Estrogen receptor alpha
+dude-esr2,367,20190,transcription factor,Estrogen receptor beta
+dude-fa10,537,28315,protease,Coagulation factor X
+dude-fa7,114,6250,protease,Coagulation factor VII
+dude-fabp4,47,2750,miscellaneous,Fatty acid binding protein adipocyte
+dude-fak1*,100,5350,protein kinase,FAK
+dude-fgfr1,139,8697,other receptor,Fibroblast growth factor receptor 1
+dude-fkb1a,111,5800,other enzyme,FK506-binding protein 1A
+dude-fnta,592,51481,other enzyme,Protein farnesyltransferase/geranylgeranyltransferase type I alpha subunit
+dude-fpps,85,8829,other enzyme,Farnesyl diphosphate synthase
+dude-gcr,258,14999,transcription factor,Glucocorticoid receptor
+dude-glcm*,54,3800,other enzyme,glucocerebrosidase
+dude-gria2,158,11842,ion channel,Glutamate receptor ionotropic
+dude-grik1,101,6549,ion channel,Glutamate receptor ionotropic kainate 1
+dude-hdac2,185,10299,other enzyme,Histone deacetylase 2
+dude-hdac8,170,10449,other enzyme,Histone deacetylase 8
+dude-hivint,100,6650,other enzyme,Human immunodeficiency virus type 1 integrase
+dude-hivpr,536,35746,protease,Human immunodeficiency virus type 1 protease
+dude-hivrt,338,18891,other enzyme,Human immunodeficiency virus type 1 reverse transcriptase
+dude-hmdh,170,8748,other enzyme,HMG-CoA reductase
+dude-hs90a*,88,4849,miscellaneous,HSP90
+dude-hxk4,92,4700,other enzyme,Hexokinase type IV
+dude-igf1r,148,9298,other receptor,Insulin-like growth factor I receptor
+dude-inha,43,2300,other enzyme,Enoyl-[acyl-carrier-protein] reductase
+dude-ital,138,8498,miscellaneous,Leukocyte adhesion glycoprotein LFA-1 alpha
+dude-jak2,107,6499,protein kinase,Tyrosine-protein kinase JAK2
+dude-kif11,116,6849,miscellaneous,Kinesin-like protein 1
+dude-kit,166,10449,other receptor,Stem cell growth factor receptor
+dude-kith,57,2849,other enzyme,Thymidine kinase
+dude-kpcb,135,8700,protein kinase,Protein kinase C beta
+dude-lck,420,27397,protein kinase,Tyrosine-protein kinase LCK
+dude-lkha4,171,9450,protease,Leukotriene A4 hydrolase
+dude-mapk2,101,6150,protein kinase,MAP kinase-activated protein kinase 2
+dude-mcr,94,5150,transcription factor,Mineralocorticoid receptor
+dude-met,166,11247,other receptor,Hepatocyte growth factor receptor
+dude-mk01,79,4549,protein kinase,MAP kinase ERK2
+dude-mk10,104,6600,protein kinase,c-Jun N-terminal kinase 3
+dude-mk14,578,35848,protein kinase,MAP kinase p38 alpha
+dude-mmp13,572,37195,protease,Matrix metalloproteinase 13
+dude-mp2k1,121,8149,protein kinase,Dual specificity mitogen-activated protein kinase kinase 1
+dude-nos1,100,8048,other enzyme,Nitric-oxide synthase
+dude-nram,98,6199,other enzyme,Neuraminidase
+dude-pa2ga,99,5150,other enzyme,Phospholipase A2 group IIA
+dude-parp1,508,30049,other enzyme,Poly [ADP-ribose] polymerase-1
+dude-pde5a,398,27547,other enzyme,Phosphodiesterase 5A
+dude-pgh1,195,10800,other enzyme,Cyclooxygenase-1
+dude-pgh2,435,23149,other enzyme,Cyclooxygenase-2
+dude-plk1,107,6800,protein kinase,Serine/threonine-protein kinase PLK1
+dude-pnph,103,6950,other enzyme,Purine nucleoside phosphorylase
+dude-ppara,373,19397,transcription factor,PPARa
+dude-ppard,240,12247,transcription factor,PPARd
+dude-pparg*,484,25296,transcription factor,PPARg
+dude-prgr,293,15648,transcription factor,Progesterone receptor
+dude-ptn1,130,7250,other enzyme,Protein-tyrosine phosphatase 1B
+dude-pur2,50,2698,other enzyme,GAR transformylase
+dude-pygm,77,3948,other enzyme,Muscle glycogen phosphorylase
+dude-pyrd,111,6450,other enzyme,Dihydroorotate dehydrogenase
+dude-reni,104,6958,protease,Renin
+dude-rock1,100,6299,protein kinase,Rho-associated protein kinase 1
+dude-rxra,131,6948,transcription factor,Retinoid X receptor alpha
+dude-sahh,63,3450,other enzyme,Adenosylhomocysteinase
+dude-src,524,34491,protein kinase,Tyrosine-protein kinase SRC
+dude-tgfr1,133,8500,other receptor,TGF-beta receptor type I
+dude-thb,103,7448,transcription factor,Thyroid hormone receptor beta-1
+dude-thrb,461,26999,protease,Thrombin
+dude-try1,449,25967,protease,Trypsin I
+dude-tryb1,148,7648,protease,Tryptase beta-1
+dude-tysy,109,6748,other enzyme,Thymidylate synthase
+dude-urok,162,9850,protease,Urokinase-type plasminogen activator
+dude-vgfr2,409,24946,other receptor,Vascular endothelial growth factor receptor 2
+dude-wee1,102,6150,protein kinase,Serine/threonine-protein kinase WEE1
+dude-xiap,100,5149,miscellaneous,Inhibitor of apoptosis protein 3

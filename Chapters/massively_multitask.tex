@@ -1,0 +1,679 @@
+%\documentclass{article}
+%\normalem
+
+
+%\begin{document}
+
+\section{Massively Multitask Networks for Drug Discovery}
+%\author{Bharath Ramsundar*, Steven Kearnes*\\Patrick Riley, Dale Webster,
+%David Konerding\\Vijay Pande\\(*Equal contribution.)}
+
+%\twocolumn[\maketitle]
+
+\subsection{Abstract}
+Massively multitask neural architectures provide a learning framework for
+drug discovery that synthesizes information from many distinct biological
+sources. To train these architectures at scale, we gather large amounts of
+data from public sources to create a dataset of nearly 40 million
+measurements across more than 200 biological targets. We investigate
+several aspects of the multitask framework by performing a series of
+empirical studies and obtain some interesting results: $(1)$ massively
+multitask networks obtain predictive accuracies significantly better than
+single-task methods, $(2)$ the predictive power of multitask networks
+improves as additional tasks and data are added, $(3)$ the total amount of
+data and the total number of tasks both contribute significantly to
+multitask improvement, and $(4)$ multitask networks afford limited
+transferability to tasks not in the training set. Our results underscore
+the need for greater data sharing and further algorithmic innovation to
+accelerate the drug discovery process.
+
+
+\subsection{Introduction}
+\label{intro}
+
+Discovering new treatments for human diseases is an immensely complicated
+challenge. Prospective drugs must attack the source of an illness, but must
+do so while satisfying restrictive metabolic and toxicity constraints.
+Traditionally, drug discovery is an extended process that takes years to
+move from start to finish, with high rates of failure along the way.
+
+After a suitable target has been identified, the first step in the drug
+discovery process is ``hit finding.'' Given some druggable target,
+pharmaceutical companies will screen millions of drug-like compounds in an
+effort to find a few attractive molecules for further optimization. These
+screens are often automated via robots, but are expensive to perform.
+Virtual screening attempts to replace or augment the high-throughput
+screening process by the use of computational methods
+\cite{shoichet2004virtual}. Machine learning methods have frequently been
+applied to virtual screening by training supervised classifiers to predict
+interactions between targets and small molecules.
+
+There are a variety of challenges that must be overcome to achieve
+effective virtual screening. Low hit rates in experimental screens (often
+only $1$--$2$\% of screened compounds are active against a given target)
+result in imbalanced datasets that require special handling for effective
+learning. For instance, care must be taken to guard against unrealistic
+divisions between active and inactive compounds (``artificial enrichment'')
+and against information leakage due to strong similarity between active
+compounds (``analog bias'') \cite{rohrer2009maximum}.  Furthermore, the
+paucity of experimental data means that overfitting is a perennial thorn.
+
+The overall complexity of the virtual screening problem has limited the
+impact of machine learning in drug discovery. To achieve greater predictive
+power, learning algorithms must combine disparate sources of experimental
+data across multiple targets. Deep learning provides a flexible paradigm
+for synthesizing large amounts of data into predictive models. In
+particular, multitask networks facilitate information sharing across
+different experiments and compensate for the limited data associated with
+any particular experiment.
+
+In this work, we investigate several aspects of the multitask learning
+paradigm as applied to virtual screening. We gather a large collection of
+datasets containing nearly 40 million experimental measurements for over
+200 targets. We demonstrate that multitask networks trained on this
+collection achieve significant improvements over baseline machine learning
+methods. We show that adding more tasks and more data yields better
+performance. This effect diminishes as more data and tasks are added, but
+does not appear to plateau within our collection. Interestingly, we find
+that the total amount of data and the total number of tasks both have
+significant roles in this improvement. Furthermore, the features extracted
+by the multitask networks demonstrate some transferability to tasks not
+contained in the training set. Finally, we find that the presence of shared
+active compounds is moderately correlated with multitask improvement, but
+the biological class of the target is not.
+
+\subsection{Related Works}
+
+Machine learning has a rich history in drug discovery. Early work combined
+creative featurizations of molecules with off-the-shelf learning algorithms
+to predict drug activity \cite{varnek2012machine}. The state of the art has
+moved to more refined models, such as the influence relevance voting method
+that combines low-complexity neural networks and k-nearest neighbors
+\cite{swamidass2009influence}, and Bayesian belief networks that repurpose
+textual information retrieval methods for virtual screening
+\cite{abdo2010ligand}. Other related work uses deep recursive neural
+networks to predict aqueous solubility by extracting features from the
+connectivity graphs of small molecules \cite{lusci2013deep}.
+
+Deep learning has made inroads into drug discovery in recent years, most
+notably in 2012 with the Merck Kaggle competition \cite{dahl2012deep}.
+Teams were given pre-computed molecular descriptors for compounds with
+experimentally measured activity against 15 targets and were asked to
+predict the activity of molecules in a held-out test set. The winning team
+used ensemble models including multitask deep neural networks, Gaussian
+process regression, and dropout to improve the baseline test set $R^2$ by
+nearly 17\%. The winners of this contest later released a technical report
+that discusses the use of multitask networks for virtual screening
+\cite{dahl2014multi}. Additional work at Merck analyzed the choice of
+hyperparameters when training single- and multitask networks and showed
+improvement over random forest models \cite{ma2015deep}. The Merck Kaggle
+result has been received with skepticism by some in the cheminformatics and
+drug discovery communities \citep[and associated comments]{lowe2012did}.
+Two major concerns raised were that the sample size was too small (a good
+result across 15 systems may well have occurred by chance) and that any
+gains in predictive accuracy were too small to justify the increase in
+complexity.
+
+While we were preparing this work, a workshop paper was released that also
+used massively multitask networks for virtual screening
+\cite{unterthinerdeep}. That work curated a dataset of 1,280 biological
+targets with 2 million associated data points and trained a multitask
+network. Their network has more tasks than ours (1,280 vs. 259) but far
+fewer data points (2 million vs. nearly 40 million). The emphasis of our
+work is considerably different; while their report highlights the
+performance gains due to multitask networks, ours is focused on
+disentangling the underlying causes of these improvements. Another closely
+related work proposed the use of collaborative filtering for virtual
+screening and employed both multitask networks and kernel-based methods
+\cite{erhan2006collaborative}. Their multitask networks, however, did not
+consistently outperform single-task models.
+
+Within the greater context of deep learning, we draw upon various strands
+of recent thought. Prior work has used multitask deep networks in the
+contexts of language understanding \cite{collobert2008unified} and
+multi-language speech recognition \cite{deng2013new}. Our best-performing
+networks draw upon design patterns introduced by GoogLeNet
+\cite{szegedy2014going}, the winner of ILSVRC 2014.
+
+\subsection{Methods}
+
+\subsubsection{Dataset Construction and Design}
+\label{sec:datasets}
+Models were trained on $259$ datasets gathered from publicly available
+data.  These datasets were divided into four groups: PCBA, MUV, DUD-E, and
+Tox21.  The PCBA group contained $128$ experiments in the PubChem BioAssay
+database \cite{wang2012pubchem}.  The MUV group contained $17$ challenging
+datasets specifically designed to avoid common pitfalls in virtual
+screening \cite{rohrer2009maximum}. The DUD-E group contained $102$
+datasets that were designed for the evaluation of methods to predict
+interactions between proteins and small molecules
+\cite{mysinger2012directory}.  The Tox21 datasets were used in the recent
+Tox21 Data Challenge (\url{https://tripod.nih.gov/tox21/challenge/}) and
+contained experimental data for $12$ targets relevant to drug toxicity
+prediction. We used only the training data from this challenge because the
+test set had not been released when we constructed our collection.  In
+total, our $259$ datasets contained $37.8$M experimental data points for
+$1.6$M compounds. Details for the dataset groups are given in
+\tablename~\ref{tab:datasets}. See the Appendix for details on individual
+datasets and their biological target categorization.
+
+\begin{table}
+\small
+\centering
+\caption{Details for dataset groups. Values for the number of data points
+per dataset and the percentage of active compounds are reported as means,
+with standard deviations in parenthesis.}
+\vskip 0.2 in
+\label{tab:datasets}
+\begin{tabular}{llll}
+\toprule
+{Group} & {Datasets} & {Data Points / ea.} & {\% Active} \\
+\midrule
+{PCBA} & 128 & $282\text{K}$ $(122\text{K})$ & $1.8$ $(3.8)$ \\
+DUD-E & $102$ & $14\text{K}$ $(11\text{K})$ & $1.6$ $(0.2)$ \\
+MUV & $17$ & $15\text{K}$ $(1)$ & $0.2$ $(0)$ \\
+Tox21 & $12$ & $6\text{K}$ $(500)$ & $7.8$ $(4.7)$ \\
+\bottomrule
+\end{tabular}
+\vskip -0.2in
+\end{table}
+
+It should be noted that we did not perform any preprocessing of our
+datasets, such as removing potential experimental artifacts. Such artifacts
+may be due by compounds whose physical properties cause interference with
+experimental measurements or allow for promiscuous interactions with many
+targets. A notable exception is the MUV group, which has been processed
+with consideration of these pathologies \cite{rohrer2009maximum}.
+
+\subsubsection{Small Molecule Featurization}
+We used extended connectivity fingerprints (ECFP4)
+\cite{rogers2010extended} generated by RDKit \cite{landrumrdkit} to
+featurize each molecule. The molecule is decomposed into a set of
+fragments---each centered at a non-hydrogen atom---where each fragment
+extends radially along bonds to neighboring atoms. Each fragment is
+assigned a unique identifier, and the collection of identifiers for a
+molecule is hashed into a fixed-length bit vector to construct the
+molecular ``fingerprint''.  ECFP4 and other fingerprints are commonly used
+in cheminformatics applications, especially to measure similarity between
+compounds \cite{willett1998chemical}. A number of molecules (especially in
+the Tox21 group) failed the featurization process and were not used in
+training our networks. See the Appendix for details.
+
+\subsubsection{Validation Scheme and Metrics}
+
+The traditional approach for model evaluation is to have fixed training,
+validation, and test sets.  However, the imbalance present in our datasets
+means that performance varies widely depending on the particular
+training/test split. To compensate for this variability, we used stratified
+$K$-fold cross-validation; that is, each fold maintains the active/inactive
+proportion present in the unsplit data. For the remainder of the paper, we
+use $K=5$.
+
+Note that we did not choose an explicit validation set. Several datasets in
+our collection have very few actives ($\sim30$ each for the MUV group), and
+we feared that selecting a specific validation set would skew our results.
+As a consequence, we suspect that our choice of hyperparameters may be
+affected by information leakage across folds. However, our networks do not
+appear to be highly sensitive to hyperparameter choice (see
+Section~\ref{sec:experimental}), so we do not consider leakage to be a
+serious issue.
+
+Following recommendations from the cheminformatics community
+\cite{jain2008recommendations}, we used metrics derived from the receiver
+operating characteristic (ROC) curve to evaluate model performance. Recall
+that the ROC curve for a binary classifier is the plot of true positive
+rate (TPR) vs. false positive rate (FPR) as the discrimination threshold is
+varied.  For individual datasets, we are interested in the area under the
+ROC curve (AUC), which is a global measure of classification performance
+(note that AUC must lie in the range $[0, 1]$).  More generally, for a
+collection of $N$ datasets, we consider the mean and median
+$k$-fold-average AUC:
+\[
+\Mean/\Median\left \{\frac{1}{K} \sum_{k=1}^K \text{AUC}_k(D_n)\middle | \ n=1,\dotsc,N\right \},
+\]
+where $\text{AUC}_k(D_n)$ is defined as the AUC of a classifier trained on
+folds $\{1,\dotsc,K\} \setminus k$ of dataset $D_n$ and tested on fold $k$.
+For completeness, we include in the Appendix an alternative metric called
+``enrichment'' that is widely used in the cheminformatics literature
+\cite{jain2008recommendations}. We note that many other performance metrics
+exist in the literature; the lack of standard metrics makes it difficult to
+do direct comparisons with previous work.
+
+\subsubsection{Multitask Networks}
+
+A neural network is a nonlinear classifier that performs repeated linear
+and nonlinear transformations on its input. Let $\mathbf{x}_i$ represent
+the input to the $i$-th layer of the network (where $\mathbf{x}_0$ is
+simply the feature vector). The transformation performed is
+\[
+\mathbf{x}_{i+1} = \sigma(\mathbf{W}_{i} \mathbf{x}_i + \mathbf{b}_{i})
+\]
+where $\mathbf{W}_i$ and $\mathbf{b}_i$ are respectively the weight matrix
+and bias for the $i$-th layer, and $\sigma$ is a nonlinearity (in our work,
+the rectified linear unit \cite{nair2010rectified}). After $L$ such
+transformations, the final layer of the network $\mathbf{x}_L$ is then fed
+to a simple linear classifier, such as the softmax, which predicts the
+probability that the input $\mathbf{x}_0$ has label $j$:
+\[
+P(y = j | \mathbf{x}_0 ) = \frac{e^{(\mathbf{w}^j)^T \mathbf{x}_L}}{\sum_{k=1}^K e^{(\mathbf{w}^k)^T \mathbf{x}_L}},
+\]
+where $K$ is the number of possible labels (here $K = 2$) and
+$\mathbf{w}^{1}, \cdots, \mathbf{w}^{K}$ are weight vectors.
+$\mathbf{W}_i$, $\mathbf{b}_i$, and $\mathbf{w}^j$ are learned during
+training by the backpropagation algorithm \cite{rumelhart1988learning}.  A
+multitask network attaches $N$ softmax classifiers, one for each task, to
+the final layer $\mathbf{x}_L$. (A ``task'' corresponds to the classifier
+associated with a particular dataset in our collection, although we often
+use ``task'' and ``dataset'' interchangeably. See
+\figurename~\ref{fig:network}.)
+
+\begin{figure}[ht]
+\centering
+% PDF generated from
+% https://docs.google.com/drawings/d/1EanM8SprMwbqYRriUyN1rBtjVjqHLfyXYQaH7Kk0rXQ/edit
+\includegraphics[trim=0 4.5in 5.5in 0,clip,width=0.9\linewidth]{Images/network.pdf}
+\caption{Multitask neural network.}
+\label{fig:network}
+\end{figure}
+
+\subsection{Experimental Section}
+
+In this section, we seek to answer a number of questions about the
+performance, capabilities, and limitations of massively multitask neural
+networks:
+
+\begin{enumerate}
+\itemsep0em
+\item Do massively multitask networks provide a performance boost over
+  simple machine learning methods? If so, what is the optimal architecture
+  for massively multitask networks?
+\item How does the performance of a multitask network depend on the number
+  of tasks? How does the performance depend on the total amount of data?
+\item Do massively multitask networks extract generalizable information
+  about chemical space?
+\item When do datasets benefit from multitask training?
+\end{enumerate}
+
+The following subsections detail a series of experiments that seek to
+answer these questions.
+
+\subsubsection{Experimental Exploration of Massively Multitask Networks}
+\label{sec:experimental}
+We investigate the performance of multitask networks with various
+hyperparameters and compare to several standard machine learning
+approaches. Table~\ref{tab:exp_results} shows some of the highlights of our
+experiments. Our best multitask architecture (pyramidal multitask networks)
+significantly outperformed simpler models, including a hypothetical model
+whose performance on each dataset matches that of the best single-task
+model (Max\{LR, RF, STNN, PSTNN\}).
+
+Every model we trained performed extremely well on the DUD-E datasets (all
+models in Table~\ref{tab:exp_results} had median $5$-fold-average AUCs
+$\ge0.99$), making comparisons between models on DUD-E uninformative. For
+that reason, we exclude DUD-E from our subsequent statistical analysis.
+However, we did not remove DUD-E from the training altogether because doing
+so adversely affected performance on the other datasets (data not shown);
+we theorize that DUD-E helped to regularize the classifier and avoid
+overfitting.
+
+\begin{table*}[t]
+\small
+\caption{Median $5$-fold-average AUCs for various models.  For each model,
+  the sign test in the last column estimates the fraction of datasets
+  (excluding the DUD-E group, for reasons discussed in the text) for which
+  that model is superior to the PMTNN (bottom row). We use the Wilson score interval to
+  derive a $95\%$ confidence interval for this fraction.  Non-neural
+  network methods were trained using scikit-learn
+  \cite{pedregosa2011scikit} implementations and a fixed set of hyperparameters.
+  We also include results for a hypothetical ``best''
+  single-task model (Max\{LR, RF, STNN, PSTNN\}) to provide a stronger
+  baseline. Details for our cross-validation and training procedures are
+  given in the Appendix.}
+\label{tab:exp_results}
+\vskip 0.2 in
+\centering
+\begin{tabular}{lcccc}
+\toprule
+Model & \makecell{PCBA \\ $(n=128)$} & \makecell{MUV \\ $(n=17)$} &
+\makecell{Tox21 \\ $(n=12)$} & \makecell{Sign Test \\ CI} \\
+\midrule
+Logistic Regression (LR)& $.801$  & $.752$ & $.738$ & $[.04, .13]$ \\
+Random Forest (RF) & $.800$  & $.774$  & $.790$ & $[.06, .16]$ \\
+Single-Task Neural Net (STNN) & $.795$ & $.732$ & $.714$ & $[.04, .12]$ \\
+Pyramidal $(2000, 100)$ STNN (PSTNN) & .809 & .745 & .740 & $[.06, .16]$ \\
+Max\{LR, RF, STNN, PSTNN\} & $.824$ & $.781$ & $.790$ & $[.12, .24]$ \\
+$1$-Hidden $(1200)$ Layer Multitask Neural Net (MTNN) & $.842$ & $.797$ & $.785$ & $[.08, .18]$ \\
+Pyramidal $(2000, 100)$ Multitask Neural Net (PMTNN) & $\mathbf{.873}$ &
+$\mathbf{.841}$ & $\mathbf{.818}$ & \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+During our first explorations, we had consistent problems with the networks
+overfitting the data. As discussed in Section~\ref{sec:datasets}, our
+datasets had a very small fraction of positive examples. For the single
+hidden layer multitask network in Table~\ref{tab:exp_results}, each dataset
+had $1200$ associated parameters. With a total number of positives in the
+tens or hundreds, overfitting this number of parameters is a major issue in
+the absence of strong regularization.
+
+Reducing the number of parameters specific to each dataset is the
+motivation for the pyramidal architecture. In our pyramidal networks, the
+first hidden layer is very wide ($2000$ nodes) with a second narrow hidden
+layer ($100$ nodes). This dimensionality reduction is similar in motivation
+and implementation to the $1$x$1$ convolutions in the GoogLeNet
+architecture~\cite{szegedy2014going}. The wide lower layer allows for
+complex, expressive features to be learned while the narrow layer limits
+the parameters specific to each task. Adding dropout of $0.25$ to our
+pyramidal networks improved performance. We also trained single-task
+versions of our best pyramidal network to understand whether this design
+pattern works well with less data. Table~\ref{tab:exp_results} indicates
+that these models outperform vanilla single-task networks but do not
+substitute for multitask training.  Results for a variety of alternate
+models are presented in the Appendix.
+
+We investigated the sensitivity of our results to the sizes of the
+pyramidal layers by running networks with all combinations of hidden layer
+sizes: $(1000, 2000, 3000)$ and $(50, 100, 150)$.  Across the
+architectures, means and medians shifted by $\le.01$~AUC with only MUV
+showing larger changes with a range of $.038$.  We note that performance is
+sensitive to the choice of learning rate and the number of training steps.
+See the Appendix for details and data.
+
+\subsubsection{Relationship between performance and number of tasks}
+\label{sec:growth_curve}
+
+The previous section demonstrated that massively multitask networks improve
+performance over single-task models. In this section, we seek to understand
+how multitask performance is affected by increasing the number of tasks.
+\emph{A priori}, there are three reasonable ``growth curves'' (visually
+represented in Figure~\ref{fig:growth_held_in}):
+\begin{description}
+\itemsep0em
+\item[Over the hill:] performance initially improves, hits a maximum, then falls.
+\item[Plateau:] performance initially improves, then plateaus.
+\item[Still climbing:] performance improves throughout, but with a diminishing rate of
+return.
+\end{description}
+
+\begin{figure}[ht]
+\vskip 0.2in
+\begin{center}
+\centerline{\includegraphics[width=0.7\linewidth]{Images/curves.png}}
+\caption{Potential multitask growth curves}
+\label{fig:growth_held_in}
+\end{center}
+\vskip -0.2in
+\end{figure}
+
+We constructed and trained a series of multitask networks on datasets
+containing $10, 20, 40, 80, 160,$ and $249$ tasks. These datasets all
+contain a fixed set of ten ``held-in'' tasks, which consists of a randomly
+sampled collection of five PCBA, three MUV, and two Tox21 datasets.  These
+datasets correspond to unique targets that do not have any obvious analogs
+in the remaining collection. (We also excluded a similarly chosen set of
+ten ``held-out'' tasks for use in Section~\ref{sec:embedding}). Each
+training collection is a superset of the preceding collection, with tasks
+added randomly. For each network in the series, we computed the mean
+$5$-fold-average-AUC for the tasks in the held-in collection. We repeated
+this experiment ten times with different choices of random seed.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\linewidth]{Images/held_in.pdf}
+\caption{Held-in growth curves. The $y$-axis shows the change in AUC
+  compared to a single-task neural network with the same architecture
+  (PSTNN).  Each colored curve is the multitask improvement for a given
+  held-in dataset. Black dots represent means across the $10$ held-in
+  datasets for each experimental run, where additional tasks were randomly
+  selected.  The shaded curve is the mean across the $100$ combinations of
+  datasets and experimental runs.}
+\label{fig:held-in}
+\end{figure}
+
+Figure~\ref{fig:held-in} plots the results of our experiments. The shaded
+region emphasizes the average growth curve, while black dots indicate
+average results for different experimental runs. The figure also displays
+lines associated with each held-in dataset. Note that several datasets show
+initial dips in performance. However, all datasets show subsequent
+improvement, and all but one achieves performance superior to the
+single-task baseline. Within the limits of our current dataset collection,
+the distribution in \figurename~\ref{fig:held-in} agrees with either
+plateau or still climbing. The mean performance on the held-in set is still
+increasing at $249$ tasks, so we hypothesize that performance is
+\textbf{still climbing}. It is possible that our collection is too small
+and that an alternate pattern may eventually emerge.
+
+\subsubsection{More tasks or more data?}
+
+In the previous section we studied the effects of adding more tasks, but
+here we investigate the relative importance of the total amount of data vs.
+the total number of tasks. Namely, is it better to have many tasks with a
+small amount of associated data, or a small number of tasks with a large
+amount of associated data?
+
+We constructed a series of multitask networks with $10, 15, 20, 30, 50$ and
+$82$ tasks. As in the previous section, the tasks are randomly associated
+with the networks in a cumulative manner (\emph{i.e.}, the $82$-task
+network contained all tasks present in the $50$-task network, and so on).
+All networks contained the ten held-in tasks described in the previous
+section. The $82$ tasks chosen were associated with the largest datasets in
+our collection, each containing $300$K-$500$K data points. Note that all of
+these tasks belonged to the PCBA group.
+
+We then trained this series of networks multiple times with $1.6$M, $3.3$M,
+$6.5$M, $13$M, and $23$M data points sampled from the non-held-in tasks. We
+perform the sampling such that for a given task, all data points present in
+the first stage ($1.6$M) appeared in the second ($3.3$M), all data points
+present in the second stage appeared in the third ($6.5$M), and so on. We
+decided to use larger datasets so we could sample meaningfully across this
+entire range. Some combinations of tasks and data points were not realized;
+for instance, we did not have enough data to train a $20$-task network with
+$23$M additional data points. We repeated this experiment ten times using
+different random seeds.
+
+\figurename~\ref{fig:data_tasks} shows the results of our experiments. The
+$x$-axis tracks the number of additional tasks, while the $y$-axis displays
+the improvement in performance for the held-in set relative to a multitask
+network trained only on the held-in data. When the total amount of data is
+fixed, having more tasks consistently yields improvement. Similarly, when
+the number of tasks is fixed, adding additional data consistently improves
+performance. Our results suggest that the total amount of data and the
+total number of tasks both contribute significantly to the multitask
+effect.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\linewidth]{Images/grid_final.pdf}
+\caption{Multitask benefit from increasing tasks and data independently.
+  As in \figurename~\ref{fig:growth_held_in}, we added randomly selected
+  tasks ($x$-axis) to a fixed held-in set. A stratified random sampling
+  scheme was applied to the additional tasks in order to achieve fixed
+  total numbers of additional input examples (color, line type).  White
+  points indicate the mean over $10$ experimental runs of $\Delta$ mean-AUC
+  over the initial network trained on the $10$ held-in datasets. Color-filled
+  areas and error bars describe the smoothed $95\%$ confidence intervals.}
+\label{fig:data_tasks}
+\end{figure}
+
+\subsubsection{Do massively multitask networks extract generalizable features?}
+\label{sec:embedding}
+
+The features extracted by the top layer of the network represent
+information useful to many tasks. Consequently, we sought to determine the
+transferability of these features to tasks not in the training set.  We
+held out ten data sets from the growth curves calculated in
+Section~\ref{sec:growth_curve} and used the learned weights from points
+along the growth curves to initialize single-task networks for the held-out
+datasets, which we then fine-tuned.
+
+The results of training these networks (with $5$-fold stratified
+cross-validation) are shown in \figurename~\ref{fig:held_out}. First, note
+that many of the datasets performed worse than the baseline when
+initialized from the 10-held-in-task networks. Further, some datasets never
+exhibited any positive effect due to multitask initialization. Transfer
+learning can be negative.
+
+Second, note that the transfer learning effect became stronger as multitask
+networks were trained on more data. Large multitask networks exhibited
+better transferability, but the average effect even with $249$ datasets was
+only $\sim.01$ AUC.  We hypothesize that the extent of this
+generalizability is determined by the presence or absence of relevant data
+in the multitask training set.
+
+\begin{figure}[ht]
+\vskip 0.2in
+\begin{center}
+\centerline{\includegraphics[width=\linewidth]{Images/held_out_v2.pdf}}
+\caption{Held-out growth curves. The $y$-axis shows the change in AUC
+  compared to a single-task neural network with the same architecture
+  (PSTNN). Each colored curve is the result of initializing a single-task
+  neural network from the weights of the networks from
+  Section~\ref{sec:growth_curve} and computing the mean across the $10$
+  experimental runs. These datasets were \emph{not} included in the
+  training of the original networks. The shaded curve is the mean across
+  the $100$ combinations of datasets and experimental runs, and black dots
+  represent means across the $10$ held-out datasets for each experimental
+  run, where additional tasks were randomly selected.}
+\label{fig:held_out}
+\end{center}
+\vskip -0.2in
+\end{figure}
+
+\subsubsection{When do Datasets Benefit from Multitask Training?}
+
+The results in Sections \ref{sec:growth_curve} and \ref{sec:embedding}
+indicate that some datasets benefit more from multitask training than
+others. In an effort to explain these differences, we consider three
+specific questions:
+\begin{enumerate}
+\itemsep0em
+\item Do some biological target classes realize greater multitask
+  improvement than others?
+\item Do tasks associated with duplicated targets have artificially high
+  multitask performance?
+\item Do shared active compounds explain multitask improvement?
+\end{enumerate}
+
+\paragraph{Target Classes}
+
+\figurename~\ref{fig:target_similarity} shows the relationship between
+multitask improvement and target classes. As before, we report multitask
+improvement in terms of $\Delta$ mean-AUC and exclude the DUD-E datasets.
+Nearly every target class realized gains, suggesting that the
+multitask framework is applicable to experimental data from multiple target
+classes.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.9\linewidth]{Images/target_classes.png}
+\caption{Multitask improvement across target classes. The $x$-coordinate
+  lists a series of biological target classes represented in our dataset
+  collection, and the $y$-coordinate is the difference in mean-AUC
+  between multitask and single-task models. Note that the DUD-E datasets
+  are excluded. Classes are ordered by total number of targets (in
+  parenthesis), and target classes with fewer than five members are merged
+  into ``miscellaneous.''}
+\label{fig:target_similarity}
+\end{figure}
+
+\paragraph{Duplicate Targets}
+\label{sec:duplicates}
+
+As mentioned in Section~\ref{sec:datasets}, there are many cases of tasks
+with identical targets. We compared the multitask improvement of duplicate
+vs. unique tasks. The distributions have substantial overlap (see the
+Appendix), but the average improvement was slightly higher for
+duplicated tasks ($0.059$ vs. $0.032$; a one-sided $t$-test between the
+duplicate and unique distributions gave $p=0.161$). Sign
+tests for single-task vs. multitask models for duplicate and unique
+targets gave significant and highly overlapping confidence intervals
+($[0.11, 0.36]$ and $[0.11, 0.24]$, respectively; recall that the meaning
+of these intervals is given in the caption for
+\tablename~\ref{tab:exp_results}). Together, these results suggest that
+there is not significant information leakage within multitask networks.
+Consequently, the results of our analysis are unlikely to be significantly
+affected by the presence of duplicate targets in our dataset collection.
+
+\paragraph{Shared Active Compounds}
+\label{sec:similarity}
+
+The biological context of our datasets implies that active compounds
+contain more information than inactive compounds; while an inactive
+compound may be inactive for many reasons, active compounds often rely on
+similar physical mechanisms. Hence, shared active compounds should be a
+good measure of dataset similarity.
+
+We compared multitask improvement against a measure of dataset similarity we
+call ``active occurrence rate'' (AOR), based on the number of active compounds
+shared between datasets (see Appendix for details). Surprisingly, there does
+not appear to be any significant correlation between AOR and $\Delta$
+mean-AUC ($r^2=0.09$). Further work is needed to identify factors that
+contribute to multitask improvement.
+
+\subsection{Discussion and Conclusion}
+In this work, we investigated the use of massively multitask networks for
+virtual screening. We gathered a large collection of publicly available
+experimental data that we used to train massively multitask neural
+networks. These networks achieved significant improvement over simple
+machine learning algorithms.
+
+We explored several aspects of the multitask framework. First, we
+demonstrated that multitask performance improved with the addition of more
+tasks; our performance was still climbing at 259 tasks. Next, we considered
+the relative importance of introducing more data vs. more tasks. We found
+that additional data and additional tasks both contributed significantly to
+the multitask effect. We next discovered that multitask learning afforded
+limited transferability to tasks not contained in the training set. This
+effect was not universal, and required large amounts of data even when it
+did apply.
+
+We observed that the multitask effect was stronger for some datasets than
+others. Consequently, we investigated possible explanations for this
+discrepancy and found that the presence of shared active compounds was
+moderately correlated with multitask improvement, but the biological class
+of the target was not. It is also possible that multitask improvement
+results from accurately modeling experimental artifacts rather than
+specific interactions between targets and small molecules. We do not
+believe this to be the case, as we demonstrated strong improvement on the
+thoroughly-cleaned MUV datasets.
+
+The efficacy of multitask learning is directly related to the availability
+of relevant data. Hence, obtaining greater amounts of data is of critical
+importance for improving the state of the art. Major pharmaceutical
+companies possess vast private stores of experimental measurements; our
+work provides a strong argument that increased data sharing could result in
+benefits for all.
+
+More data will maximize the benefits achievable using current
+architectures, but in order for algorithmic progress to occur, it must be
+possible to judge the performance of proposed models against previous work.
+It is disappointing to note that all published applications of deep
+learning to virtual screening (that we are aware of) use distinct datasets
+that are not directly comparable. It remains to future research to
+establish standard datasets and performance metrics for this field.
+
+Another direction for future work is the further study of small molecule
+featurization. In this work, we use only one possible featurization
+(ECFP4), but there exist many others. Additional performance may also be
+realized by considering targets as well as small molecules in the
+featurization. Yet another line of research could improve performance by
+using unsupervised learning to explore much larger segments of chemical
+space.
+
+Although deep learning offers interesting possibilities for virtual
+screening, the full drug discovery process remains immensely complicated.
+Can deep learning---coupled with large amounts of experimental
+data---trigger a revolution in this field? Considering the transformational
+effect that these methods have had on other fields, we are optimistic about
+the future.
+
+\subsection*{Acknowledgments} B.R. was supported by the Fannie and John Hertz
+Foundation. S.K. was supported by a Smith Stanford Graduate Fellowship.
+We also acknowledge support from NIH and NSF, in particular NIH U54
+GM072970 and NSF 0960306. The latter award was funded under the American
+Recovery and Reinvestment Act of 2009 (Public Law 111-5).
+
+%\bibliography{icml2015}
+%\bibliographystyle{abbrv}
+%\end{document}

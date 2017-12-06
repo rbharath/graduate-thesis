@@ -1,0 +1,294 @@
+\section{Low Data Drug Discovery with One-Shot Learning}
+
+\begin{abstract}
+Recent advances in machine learning have made significant contributions to drug discovery. Deep neural networks in particular have been demonstrated to provide significant boosts in predictive power when inferring the properties and activities of small-molecule compounds \cite{ma2015deep}. However, the applicability of these techniques has been limited by the requirement for large amounts of training data. In this work, we demonstrate how one-shot learning can be used to significantly lower the amounts of data required to make meaningful predictions in drug discovery applications. We introduce a new architecture, the iterative refinement LSTM, that, when combined with graph convolutional neural networks, significantly improves learning of meaningful distance metrics over small-molecules. We open source all models introduced in this work as part of DeepChem, an open-source framework for deep-learning in drug discovery
+\cite{ram2016}.
+\end{abstract}
+
+\subsection{Introduction}
+The lead optimization step of drug discovery is fundamentally a low-data problem. When biological studies yield evidence that a particular molecule can modulate essential pathways to achieve therapeutic activity, the discovered molecule often fails as a potential drug for a number of reasons including toxicity, low activity, and low solubility \cite{waring2015analysis}. The central problem of small-molecule based drug-discovery is to optimize the candidate molecule by finding analogue molecules with increased pharmaceutical activity and reduced risks to the patient. Yet, with only a small amount of biological data available on the candidate and related molecules, it is challenging to form accurate predictions for novel compounds.
+
+In the last few years, the field of machine-learning has produced several pivotal advances that address complex problems. Deep neural networks have solved challenging problems in visual perception \cite{ILSVRC15}, speech-recognition \cite{deng2013new}, language translation \cite{wu2016google}, and game-playing \cite{silver2016mastering}. These techniques leverage the use of multilayer neural network architectures as powerful and flexible function approximators. This capability of deep neural networks is underpinned by their ability to learn sophisticated representations of their input given large amounts of data.
+
+These advances in deep-learning have inspired novel approaches for better understanding chemistry. For example, in 2012, Merck sponsored a Kaggle competition for improving the accuracy of molecular property prediction. The winning team used multitask deep networks and achieved a 15\% improvement in relative accuracy over a random forest baseline \cite{dahl2012deep}. Following this work, many groups demonstrated that massively multitask networks can provide significant boosts in the predictive power of deep-learning models for property prediction \cite{ramsundar2015massively, unterthiner2014deep}. In parallel, other groups developed sophisticated deep-architectures for processing and extracting features from molecular structures \cite{lusci2013deep}. Graph-convolutional architectures \cite{duvenaud2015convolutional, kearnes2016molecular} in particular process small-molecules as undirected graphs and build up features using learnable convolution layers. In contrast to older small-molecule featurizing algorithms, such as circular fingerprints\cite{rogers2010extended}, these new graph convolutional feature extracting architectures are learnable, meaning they can be modified to improve performance. 
+
+The practical effect of these innovations in drug discovery has been limited as most of the aforementioned deep-learning frameworks require large-amounts of data. For example, massively multitask networks have so far been trained with millions of datapoints \cite{ramsundar2015massively}. This is in stark contrast to the state of current drug discovery pipelines, which often struggle to characterize even a few dozen compounds. Recent work has demonstrated that standard machine-learning techniques such as random forests and simple deep-networks are capable of learning meaningful chemical information from only a few hundred compounds \cite{subramanian2016computational}, but even a hundred compounds is often too resource intensive for standard drug discovery campaigns. 
+
+Other recent advances in machine learning have demonstrated that in some circumstances, non-trivial predictors may be learned from only a few datapoints \cite{lake2015human, santoro2016one, vinyals2016matching}. These methods work by using related data to learn a meaningful distance metric over the space of possible inputs. This sophisticated metric is used to compare new datapoints to the limited available data and subsequently predict properties of these new datapoints. More broadly, these techniques are known as "one-shot learning" methods. For example, matching-networks \cite{vinyals2016matching}, learn a distance-metric upon images which they use to achieve impressive near-human accuracies on the one-shot character-recognition Omniglot dataset \cite{lake2015human}.
+
+In this work, we mathematically adapt the standard one-shot learning paradigm to the the drug discovery problem. Standard one-shot learning focuses on recognizing new-classes (say recognizing a giraffe given only one example). In drug-discovery, the challenge is rather to predict the behavior of a molecule in a new experimental system.
+
+We introduce a new deep-learning architecture, the iterative refinement LSTM, a modification of the matching-networks architecture and the the residual convolutional network \cite{he2016identity}. This architecture allows for the learning of sophisticated metrics which can trade information between evidence and query molecules. We demonstrate that this architecture offers significant boosts in predictive power for a variety of problems meaningful for low-data drug discovery.
+
+Furthermore, we take a strong open-source approach in this work. Every primitive introduced in this paper is open-sourced as part of the DeepChem \cite{ram2016} library for open-source drug discovery. In particular we provide high-quality Tensorflow \cite{abadi2016tensorflow} implementations of graph-convolutional primitives along with implementations of our one-shot learning models. The scripts used to generate all numbers in this paper are similarly open sourced, along with all datasets. Interested parties can reproduce all results claimed in this work with relative ease.
+
+%\subsection{Related Work}
+%Matching Networks Paper. Massively Multitask Networks for Drug %Discovery. Merck Deep Learning Papers. Graph convolutions. Google Graph %Convolutions. 
+
+\subsection{Results and Discussion}
+
+This paper introduces the task of low data learning for drug discovery, and provides an architecture for learning such models. We demonstrate that this architecture can provide strong boosts over simpler methods for low-data learning. On the Tox21 and SIDER collections, one-shot learning methods strongly dominate simpler machine learning baselines. This result is particularly interesting for the SIDER collection, since this dataset consists of very high-level phenotypic side-effect observations. Given the amount of uncertainty in these predictions, the fact that one-shot learning is able to do well is a strong indication that these methods could offer strong performance on small biological datasets (for example, perhaps on a small number of drug tests done with rats).
+
+We note that our work is not simply an application of prior work on one-shot learning to molecular datasets. The learning task undertaken by previous one-shot algorithms \cite{vinyals2016matching} is to perform object recognition for new classes of images given only a few examples from each class. For molecules, the analogous learning challenge would be to learn the behavior of compounds in a new molecular scaffold, for a fixed experimental assay, given only a few data points from the new scaffold. Our results go further, and demonstrate that iterative refinement LSTMs can generalize to new experimental assays, related but not identical to assays in the training collection. For images, the analogous step would be demonstrating that one-shot methods trained to perform object recognition, can perform, say, object localization given only limited amounts of data. Consequently, this work takes a conceptual step forward, showing that one-shot methods are capable of stronger generalization than demonstrated previously.
+
+At the same time, it is clear that there are strong limitations to the generalization powers of current one-shot learning methods. On the MUV datasets, one-shot learning methods struggle compared to simple machine-learning baselines. This result is likely due to the presence of diverse scaffolds in the MUV collection, suggesting that one-shot learning methods may struggle to generalize to unseen molecular scaffolds. Furthermore, on the transfer learning experiment, which attempts to use the Tox21 collection to train SIDER predictors, all one-shot learning methods collapse entirely. It is clear that there is a limit to the cross-task generalization capability of one-shot models, but it is left to future work to determine the precise limits. Future work might also investigate the structure of the embeddings learned by the iterative refinement LSTM modules, to understand how these representations compare to standard techniques such as circular fingerprints. It might, for example, be possible to perform one-shot learning purely with circular fingerprints rather than learned dense embeddings.
+
+In order to facilitate the wide adoption of these models, we've open-sourced all graph-convolutional primitives in addition to the iterative refinement LSTM models themselves as part of the DeepChem library. All scripts used to perform experiments listed in this paper have been made public as well.
+
+The use of one-shot learning in chemistry can only be validated experimentally, but we hope that our results will provide the impetus for such work.
+
+
+\subsection{Methods}
+Figure~\ref{fig:schematic} provides a high-level schematic of our architecture for one-shot learning in drug-discovery. The remainder of this section will expand on the subcomponents that comprise such an architecture and introduce our proposed iterative refinement LSTM module.
+
+\begin{figure}[h]
+\includegraphics[width=\textwidth]{Images/schematic_v2.png}
+\captionof{figure}{Schematic of Network Architecture for one-shot learning in drug discovery}
+\label{fig:schematic}
+\end{figure}
+
+\subsubsection{Mathematical Formalism}
+
+In this paper, we consider the situation in which one has multiple binary learning tasks. Some proportion of these tasks are reserved for training a one-shot learning model. The remaining tasks are those with too little data for standard machine-learning models to learn an effective classifier predicting the outcomes for these tasks (active/inactive correspond respectively to positive/negative examples for the binary classifier). The goal is to harness the information available in the training tasks to create strong classifiers for the test systems. 
+
+%(The one-shot learning framework does not currently support low-data regression. It would be interesting for future work to extend the mathematical framework to do so. Han: I completely agree this is quite fascinating. Perhaps,  you could do a kernel average over the outcomes for regression. )
+
+Mathematically, we have $T$ tasks, each associated with a data set, $S=\left\{\left(x_i,y_i\right)\right\}_{i=1}^{m}$, $y_i\in\left\{0,1\right\}$ (here $m = |S|$ is the number of datapoints in $S$). In our setting, each task typically corresponds to an experimental assay. The datapoints $x$ are compounds tested in the experimental assay, while the labels $y$ are binary experimental outcomes for the experiment (e.g. active/inactive). The learning challenge is learning to predict the experimental outcomes for new compounds tested against this assay.
+
+We refer to the collection of available datapoints for a given task as a "support" set. The goal is to learn a function $h$, parameterized upon choice of support $S$ that predicts the probability of any query $x$ being active in the same system. Formally, $h_S(x)\,:\,\mathcal{X}\rightarrow\left[0,1\right]$, where $\mathcal{X}$ is the chemical space of small-molecules. If $h$ is specified with a neural network, fully differentiable with respect to $x$ \emph{and} $S$, then $h$ can be trained end-to-end with gradient descent.
+
+
+\subsubsection{One-shot Learning}
+In this section, we briefly review previously proposed techniques for one-shot learning and then introduce our new architecture for one-shot learning. We closely follow notation introduced in previous work \cite{vinyals2016matching} to lower notational burden for readers.
+\paragraph{Review of prior one-shot techniques}
+
+Deep one-shot learning systems \cite{santoro2016one, vinyals2016matching} use convolutional layers to encode images into continuous vectors. In the simplest one-shot learning formalism these continuous vectors are then fed into a simple nearest-neighbor classifier, that labels new examples by distance-weighted combination of support set labels. Let $a(x, x_i)$ denote some weighting function for query example $x$ and support set element $x_i$ with associated label $y_i$. Then the label $h_S(x)$ for query compound $x$ can be defined as
+\[
+h_S(x) = \sum\limits_{i=1}^{m}a\left(x,x_i\right)y_i
+\]
+The function $a$ is called an attention mechanism in previous work \cite{vinyals2016matching}. Mathematically, an attention mechanism is a non-negative function $a(x,x_i)$, with $\sum\nolimits_{i=1}^{m}a(x,x_i)=1$, that forms a probability distribution over the support set. The purpose of the attention distribution $a(x, \cdot)$ is to reflect the model's reasoning about the relationship between examples in support $S$ and the query $x$. The final prediction of the task's output for $x$ can then be interpreted as the expected value of the $y_i$'s under the attention distribution.
+
+The attention mechanism $a$ depends on two embedding functions $f\,:\,\mathcal{X}\rightarrow\mathbf{R}^p$ and $g\,:\,\mathcal{X}\rightarrow\mathbf{R}^p$ which embed input examples (in small molecule space) into a continuous representation space. In past work, both $f$ and $g$ are standard convolutional networks, while in ours, $f$ and $g$ are graph-convolutional networks. The similarities between the ``embedded'' vectors $f(x)$ and $\{g(x_i)\}$ are computed using a similarity measure $k(\cdot,\cdot)$.  For example, $k$ could be the cosine-distance between two vectors. Given a choice of similarity measure, a simple attention mechanism $a$ can be defined by normalizing the similarity values
+\[
+a(x,x_i) = \frac{k\left(f(x),g(x_i\right))}{\sum\nolimits_{j=1}^{m} k\left(f(x),g(x_j\right))}
+\]
+Note that $a(x,x_i)$ is large when $f(x)$ is closer to $g(x_i)$ under metric $k$ compared to the other $g(x_j)$'s. This formulation of one-shot learning has been referred to as a Siamese one-shot learning method \cite{koch2015siamese}. If $f$ and $g$ are circular fingerprints\cite{rogers2010extended}, and $k$ the Tanimoto distance, notice that this formula matches standard chemoinformatic similarity methods.
+
+% Example similarity functions include the exponentiated cosine similarity, $k(z,z^\prime)=e^{\cos\left(z,z^\prime\right)}$ or the RBF kernel, $k(z,z^\prime)=e^{-\|z - z^\prime|_2^2/2}$. 
+
+The simple one-shot learning formulation introduced thus far uses independent embeddings $f(x)$ and $g(x_i)$ with only the distance metric $k$ linking the information from the two feature embeddings. As a result, the feature map $f(x)$ is formed without any context about data available in support $S = \{x_1,\dotsc, x_m\}$. The previously introduced matching-network architecture \cite{vinyals2016matching} addresses this problem by developing full context embeddings, in which embeddings $f(x)=f(x\mid S)$ and $g(x_i)=g(x_i\mid S)$ are computed using both $x$ and $S$. Full context embeddings allow the embeddings for $x$ and $x_i$'s to affect one another. Empirically, this modification allows for stronger one-shot learning results.
+
+To construct $f(x\mid S)$ and $g(x_i\mid S$), matching networks\cite{vinyals2016matching} compute initial embeddings $f^\prime(x)$ and $g^\prime(x)$ using standard convolutional neural networks. (Note $f'$ and $g'$ are identical to the $f$ and $g$ used in the simple one-shot formulation.) The embedding $g(x)$ is computed by placing all the $g^\prime(x_i)$'s into a vector, and linking all the elements using a bidirectional LSTM \cite{hochreiter1997long, graves2013hybrid} ($\text{BiLSTM}$), allowing each $g(x_i)$ to be influenced by all the $g^\prime(x_j)$'s. 
+\[
+g(x\mid S) =\text{BiLSTM}([g'(x_1)|\cdots|g'(x_m)])
+\]
+We note that LSTM (long short-term memory) networks are a form of recurrent neural network useful for processing sequences of information. In our application, the support set $S$ can be viewed as a sequence $x_1,\dotsc, x_m$. The BiLSTM is a modification of the basic LSTM that partially reduces dependence of the output on the ordering of the sequence. 
+
+To compute embedding $f(x\mid S)$, matching networks exploit a context based attention LSTM model \cite{vinyals2015order} ($\text{attLSTM}$), which is entirely order invariant with respect to the sequence. This model computes an order independent combination of its inputs.
+\[
+f(x\mid S) = \text{attLSTM}(f'(x), \{g(x_i\mid S)\})
+\]
+Internally, the $\text{attLSTM}$ contains $K$ layers of processing which allow for transfer of information amongst its input. Note that both the $\text{BiLSTM}$ and $\text{attLSTM}$ are mechanisms for combining sequences of vectors into single vectors. However, the $\text{attLSTM}$ is order-independent, while the $\text{BiLSTM}$ is order dependent. The order dependence in the definition of $g(x\mid S)$ is undesirable since there is no natural ordering to the elements of the support set. Furthermore, the treatment of $f$ and $g$ is non-symmetric. While $g(\cdot \mid S)$ depends only on the $g'$, the definition of $f$ depends on $f'$ and the embedding $g(\cdot \mid S)$. %A more natural architecture might insist upon a more symmetric ordering.
+
+
+%Moreover, notice that $f$ is formed after $g$
+
+%take $g^\prime(S)$ to be $\left[g^\prime(x_1)^\top,\dots,g^\prime(x_m)^\top\right]^\top$
+
+\paragraph{Iterative refinement LSTMs}
+\begin{figure}[h]
+\includegraphics[width=\textwidth]{Images/resiembedding_graphic_v2.png}
+\captionof{figure}{Pictorial depiction of iterative refinement of embeddings. Inputs/outputs are 2 dimensional for illustrative purposes, with $q_1$ and $q_2$ forming the coordinate axes. Red and blue points depict positive/negative samples (for illustrative purposes only). The original embedding $g'(S)$ is shown as squares. The expected features, $\mathbf{r}$ are shown as empty circles.}
+\label{fig:resiembed}
+\end{figure}
+
+Our proposed architecture for one-shot learning preserves the context-aware design of matching networks, but resolves the order dependence in the support-embedding $g$ and the non-symmetric treatment of the query and support noted in the previous section (Figure~\ref{fig:resiembed}).
+
+The core idea is to use an $\text{attLSTM}$ to generate both query embedding $f$ and support embedding $g$. As noted previously, the matching networks \cite{vinyals2016matching} embedding requires the support embedding $g(\cdot \mid S)$ to define $f(\cdot \mid S)$. To resolve this issue, our architecture iteratively evolves both embeddings simultaneously.
+
+On the first iteration, we define $f(x) = f^\prime(x)$ and $g(S)= g^\prime(S)$. Then, we iteratively update the embeddings $f$ and $g$ for $L$ steps using an attention mechanism. This iteration for $L$ steps is analogous to the $K$ internal steps within an $\text{attLSTM}$, but with dual refinement of both support and query (Figure~\ref{fig:resiembed}). This construction allows the embedding of the data set to iteratively inform the embedding of the query. The quantity $L$ will be referred to as the depth of the IterRefLSTM. The equations below specify the full update performed over the $L$ iterations.
+
+%(lines 1-3 below). For each example, the expected feature map under the attention mechanism is calculated, which is then fed alongside the initial embeddings into an LSTM, which generates changes to the original embedding. The process is then repeated with the new embedding for a fixed number of steps.
+\begin{minipage}[b]{\linewidth}
+\centering
+\begin{tabular}{M M l}
+        \multicolumn{4}{c}{\emph{Initialize}}\\
+        \multicolumn{4}{c}{$\mathbf{r} = g^\prime(S)$\quad $\delta \mathbf{z} = \mathbf{0}$\quad $\delta z = 0$}\\       
+        \multicolumn{4}{c}{\emph{Repeat L times}}\\
+        e & k(f^\prime(x)+\delta z,\mathbf{r}) & \mathbf{e} & k(\mathbf{r}+\delta\mathbf{z},g^\prime(S)) & \mbox{(similarity measures)}\\
+        a_j &  e_{j} / \sum\nolimits_{j=1}^{m}e_{ij} &  \mathbf{A}_{ij} &  \mathbf{e}_{ij} / \sum\nolimits_{j=1}^{m}\mathbf{e}_{ij} & \mbox{(attention mechanism)}\\        
+        r & a^\top \mathbf{r} & \mathbf{r} & \mathbf{A} g^\prime(\mathbf{S}) &  \mbox{(expected feature map)}\\
+        \delta z & {\rm{LSTM}}\left([\delta z,r]\right) & \delta \mathbf{z} & {\rm{LSTM}}\left([\delta \mathbf{z}, \mathbf{r}]\right) &  \mbox{(generate updates)}\\
+        \multicolumn{4}{c}{\emph{Return}}\\
+        f(x) & f^\prime(x) + \delta z & g(\mathbf{S}) & g^\prime(\mathbf{S})+\delta \mathbf{z} & \mbox{(evolve embeddings)}\\
+\end{tabular}
+\end{minipage}
+\vspace{6pt}
+
+The generated dually evolved embeddings are used to perform one-shot learning as in the simpler models explained in previous sections.
+
+\subsubsection{Graph Convolutions}
+We briefly review prior work on molecular graph convolution, then introduce a pair of new graph convolutional layers that we find useful for architectural design.
+
+\paragraph{Review of prior work on molecular graph convolutions}
+Earlier work \cite{duvenaud2015convolutional} defines a generalized graph convolution layer that extends standard two-dimensional convolutions upon images to arbitrary graphs. In standard convolutional networks, an image can be viewed as a grid, where each node corresponds to a pixel. The ``neighbors'' of a pixel in the same receptive field are passed through a dense neural layer to compute the output value for the convolution\cite{karpathy231n}. Similarly, when computing the convolution output for a specific node in an arbitrary graph, all neighbors of the node are passed through a dense layer to form the new features at this node. Both convolutions exploit the ``local geometry'' of the system to reduce the number of learnable parameters (see figure \ref{conv} and Appendix). Since molecules can be viewed as undirected graphs, with atoms as nodes and bonds as edges, graph convolutional architectures allow for the learning of complex functions of molecular structure.
+
+Graph-convolutional networks are useful for transforming small-molecules into continuous vectorial representations. Such representations have emerged as a powerful way to manipulate small molecules within deep networks \cite{gomez2016automatic}. Earlier work on one-shot learning uses convolutional neural networks to encode images into continuous vectors which are then used to make one-shot predictions. By analogy, we use graph-convolutional neural networks to encode small-molecules in a form suitable for one-shot prediction.
+
+
+\paragraph{New Layers}
+For the purposes of architectural design, we found it useful to introduce a pair of graph convolutional layer types, max-pooling and graph-gathering. The max-pooling operation has been used widely in the broader convolutional architecture literature \cite{karpathy231n}, and the graph-gather layer has been used implicitly in previous graph-convolutional architectures \cite{duvenaud2015convolutional}.
+
+Standard convolutional networks have "pooling layers", which perform a max operation upon local receptive fields in an image \cite{karpathy231n}. In analogy to this pooling operation, we introduce an analogous max pool operator on a node in graph structured data that simply returns the maximum activation across the node and the node's neighbors (see figure \ref{conv} and Appendix). Such an operation is useful for increasing the size of downstream convolutional layer receptive fields without increasing the number of parameters.
+
+In a graph-convolutional system, each node has a vector of descriptors. However, at prediction time, we will require a single vector descriptor of fixed size for the entire graph. We introduce a graph-gather convolutional layer which simply sums all feature vectors for all nodes in the graph to obtain a graph feature vector (see figure \ref{conv}). Note that summing feature vectors in this fashion has been done in previous architectures \cite{duvenaud2015convolutional}, but we find that explicitly defining a graph-gather layer is useful for architectural design.
+
+
+To facilitate the use of graph-convolutional layers in future work, we open-source our Tensorflow\cite{abadi2016tensorflow} implementation of graph-convolutions, graph-pooling, and graph-gathering layers as part of DeepChem \cite{ram2016}.
+
+\begin{figure}[H]
+\includegraphics[width=\textwidth]{Images/graphconv_graphic_v2.png}
+\captionof{figure}{Graphical representation of the major graph operations described in this paper. For each of the operations, the nodes being operated on are shown in blue, with unchanged nodes shown in light blue. For graph convolution and graph pool, the operation is shown for a single node, $v$, however, these operations are performed on all nodes $v$ in the graph simultaneously.}
+\label{conv}
+\end{figure}
+
+%Furthermore, we modify the architecture in (\cite{duvenaud2015convolutional}) to more closely mirror the feedforward architectures commonly used in convolutional neural networks, such as those found in AlexNet (\cite{alex_net}) and LeNet (CITE).
+
+\subsubsection{Model Training and Evaluation}
+The objective for the iterative refinement LSTM models is similar to that for the matching networks, with the key difference that a set of training tasks are specified instead of a set of training classes. Note that this distinction means our work is not a direct extension of prior work on one-shot learning; rather we seek to demonstrate that one-shot methods are capable of transferring information between related, but distinct learning tasks. 
+
+Let $\text{Tasks}$ represent the set of all learning tasks. We split this into two disjoint sets, $\text{Train-Tasks}$ and $\text{Test-Tasks}$. Let $S$ represent a support set, and let $B$ represent a batch of queries.
+\[
+\mathcal{L} = -E_{T\in\text{Train-Tasks}} \left [ E_{S\sim T, B\sim T} \left [ \sum_{(x,y) \in B} \log P_\theta(y\mid x, S) \right ] \right ]
+\]
+
+Training consists of a sequence of episodes. In each episode, a task $T$ is randomly sampled, then a support $S$ and a batch of queries $B$ (non-overlapping) are sampled from the task. One gradient descent step minimizing $\mathcal{L}$, using ADAM \cite{kingma2014adam} is performed for each episode. We experimented with more gradient descent steps per episode, but found that sampling more supports instead improved performance. The appendix contains numerical details of settings used for training.
+
+At test time, the accuracy of a one-shot model is evaluated separately for each test task in $\text{Test-Tasks}$. For a given test task, a support of size $|S|$ is sampled at random from datapoints for that task. The ROC-AUC score for the model is evaluated on the remainder of the datapoints for the test task (excluding the support). This procedure is reported $n$ times for each test task ($20$ times in all experiments reported below), and the mean and standard deviations of ROC-AUC scores for each test task are computed. 
+  
+
+\subsection{Experiments}
+This section reports experimental results for one-shot models across a number of assay collections.
+\subsubsection{Tox21}
+The Tox21 collection consists of 12 nuclear receptor assays related to human toxicity, first gathered for the Tox21 Data Challenge \cite{tox21}. The winner of this challenge used a multitask deep-network \cite{unterthiner2015toxicity} to achieve strong predictive performance. For a low-data benchmark, we don't use the standard train/test split for this dataset. Instead, we use the first nine assays as the training set, and the last 3 assays as the test collection. For details, see appendix.
+
+Results are in Table~\ref{tab:tox21}. All one-shot learning methods show strong boosts over the random-forest baseline, with the iterative refinement LSTM models showing a more robust boost in the presence of less data. Interestingly, the iterative refinement LSTM appears to display lower variance due to choice of support set when compared to other models, demonstrating a potential benefit of iterative refinement process. The singletask graph convolutional baseline performs much worse than all one-shot models, demonstrating that the strong performance of one-shot models likely requires architectures that explicitly promote metric learning.
+\begin{table}[h]
+    \centering
+    \begin{tabular}{ |c|c|c|c|c|c| } 
+    \hline
+    Tox21 & RF (100 trees) & Graph Conv & Siamese & AttnLSTM & IterRefLSTM \\ 
+    \hline
+    10+/10- & $0.586 \pm 0.056$ & $0.648 \pm 0.029$ & $0.820 \pm 0.003$ & $0.801 \pm 0.001$ & $\mathbf{0.823 \pm 0.002}$ \\
+    \hline
+    5+/10- & $0.573 \pm 0.060$ & $0.637 \pm 0.061$ & $0.823 \pm 0.004$ & $0.753 \pm 0.173$ & $\mathbf{0.830 \pm 0.001}$ \\ 
+    \hline
+    1+/10- & $0.551 \pm 0.067$ & $0.541 \pm 0.093$ & $\mathbf{0.726 \pm 0.173}$ & $0.549 \pm 0.088$ & $0.724 \pm 0.008$ \\ 
+    \hline
+    1+/5- & $0.559 \pm 0.063$ & $0.595 \pm 0.086$ & $0.687 \pm 0.210$ & $0.593 \pm 0.153$ & $\mathbf{0.795 \pm 0.005}$ \\ 
+    \hline
+    1+/1- & $0.535 \pm 0.056$ & $0.589 \pm 0.068$ & $0.657 \pm 0.222$ & $0.507 \pm 0.079$ & $\mathbf{0.827 \pm 0.001}$\\ 
+    \hline
+    \end{tabular}
+    \caption{ROC-AUC scores of models on median held-out task for each model on Tox21. Numbers reported are means and standard deviations. Randomness is over the choice of support set; experiment is repeated with 20 support sets. The appendix contains results for all held-out Tox21 tasks. The result with highest mean in each row is highlighted. The notation 10+/10- indicates supports with $10$ positive examples and $10$ negative examples.}
+    \label{tab:tox21}
+\end{table}
+
+\subsubsection{SIDER}
+
+The SIDER dataset contains information on marketed medicines and their observed adverse reactions \cite{kuhn2015sider}. We originally tested on the original 5868 side effect categories, but due to lack of signal at this level of granularity we grouped the drug-SE pairs into 27 system organ classes according to MedDRA classifications \cite{meddra}. We treat the problem of predicting whether a given compound induces a side-effect as an individual task (for 27 tasks in total). For the low-data benchmark, all models were trained on the first 21 tasks and tested on the last 6. For details see appendix.
+
+Results are in Table~\ref{tab:sider}. The Siamese and IterRefLSTM methods show strong boosts over the random-forest baseline, but the AttnLSTM has poor performance on this collection (comparable to the random forest). The iterative refinement LSTM models show a robust boost in the presence of less data. As before, the iterative refinement models tend to have lower variance. The graph convolutional baseline does poorly, with performance indistinguishable from random.
+
+\begin{table}
+    \centering
+    \begin{tabular}{ |c|c|c|c|c|c| } 
+    \hline
+    SIDER & RF (100 trees) & Graph Conv & Siamese & AttnLSTM & IterRefLSTM \\ 
+    \hline
+    10+/10- & $0.535 \pm 0.036$ & $0.483 \pm 0.026$ & $\mathbf{0.687 \pm 0.089}$ & $0.553 \pm 0.058$ & $0.669 \pm 0.007$ \\
+    \hline
+    5+/10- & $0.533 \pm 0.030$ & $0.473 \pm 0.029$ & $0.648 \pm 0.070$ & $0.534 \pm 0.053$ & $\mathbf{0.704 \pm 0.002}$ \\ 
+    \hline
+    1+/10- & $0.540 \pm 0.034$ & $0.447 \pm 0.016$ & $0.544 \pm 0.056$ & $0.506 \pm 0.016$ & $\mathbf{0.556 \pm 0.011}$ \\ 
+    \hline
+    1+/5- & $0.529 \pm 0.028$ & $0.457 \pm 0.029$ & $0.530 \pm 0.050$ & $0.505 \pm 0.022$ & $\mathbf{0.644 \pm 0.012}$ \\ 
+    \hline
+    1+/1- & $0.506 \pm 0.039$ & $0.468 \pm 0.045$ & $0.510 \pm 0.016$ & $0.501 \pm 0.022$ & $\mathbf{0.697 \pm 0.002}$ \\ 
+    \hline
+    \end{tabular}
+    \caption{ROC-AUC scores of models on median held-out task for each model on SIDER. Numbers reported are means and standard deviations. Randomness is over the choice of support set; experiment is repeated with 20 support sets. The appendix contains results for all held-out SIDER tasks. The result with highest mean in each row is highlighted. The notation 10+/10- indicates supports with $10$ positive examples and $10$ negative examples.}
+    \label{tab:sider}
+\end{table}
+
+\subsubsection{MUV}
+The MUV dataset collection \cite{rohrer2009maximum} contains 17 assays designed to be challenging for standard virtual screening. The positives examples in these datasets are selected to be structurally distinct from one another. As a result, this collection is a best-case scenario for baseline machine learning (since each data point is maximally informative) and a worst-case test for the low-data methods, since structural similarity cannot be effectively exploited to predict behavior of new active compounds.
+
+Results are in Table~\ref{tab:MUV}. The random forest baseline does significantly better for MUV than for the other two datsets we tested. All one-shot models struggle on this collection. The graph-convolutional baseline struggles on MUV as well, suggesting that part of the difficulty of MUV may be due to current limitations of graph convolutions. That said, these results suggest that one-shot learning methods may have some difficulties generalizing to new molecular scaffolds.
+
+\begin{table}
+    \centering
+    \begin{tabular}{ |c|c|c|c|c|c| } 
+    \hline
+    MUV & RF (100 trees) & Graph Conv & Siamese & AttnLSTM & IterRefLSTM \\ 
+    \hline
+    10+/10- & $\mathbf{0.754 \pm 0.064}$ & $0.568 \pm 0.085$ & $0.601 \pm 0.041$ & $0.504 \pm 0.058$ & $0.499 \pm 0.053$ \\
+    \hline
+    5+/10- & $\mathbf{0.730 \pm 0.063}$ & $0.565 \pm 0.068$ & $0.655 \pm 0.166$ & $0.507 \pm 0.052$ & $0.663 \pm 0.019$ \\ 
+    \hline
+    1+/10- & $0.556 \pm 0.084$ & $0.569 \pm 0.061$ & $\mathbf{0.602 \pm 0.118}$ & $0.504 \pm 0.044$ & $0.569 \pm 0.012$ \\ 
+    \hline
+    1+/5- & $0.598 \pm 0.067$ & $0.554 \pm 0.089$ & $0.514 \pm 0.053$ & $0.515 \pm 0.021$ & $\mathbf{0.632 \pm 0.011}$ \\ 
+    \hline
+    1+/1- & $\mathbf{0.559 \pm 0.095}$ & $0.552 \pm 0.084$ & $0.500 \pm 0.0001$ & $0.500 \pm 0.027$ & $0.479 \pm 0.037$ \\ 
+    \hline
+    \end{tabular}
+    \caption{ROC-AUC scores of models on median held-out task for each model on MUV. Numbers reported are means and standard deviations. Randomness is over the choice of support set; experiment is repeated with 20 support sets. The appendix contains results for all held-out MUV tasks. The result with highest mean in each row is highlighted. The notation 10+/10- indicates supports with $10$ positive examples and $10$ negative examples.}
+    \label{tab:MUV}
+\end{table}
+
+\subsubsection{Transfer Learning to SIDER from Tox21}
+
+The experiments thus far have tested the ability of one-shot learning methods to generalize from training tasks to closely related testing tasks. To test whether one-shot learning methods are capable of broader generalization, we trained models on the Tox21 dataset collection and evaluated predictive accuracy on the SIDER collection. Note that these collections are broadly distinct, with Tox21 measuring results in nuclear receptor assays, and SIDER measuring adverse reactions from real patients.
+
+Results are in Table~\ref{tab:transfer}. None of our models achieve any predictive power on this task, providing evidence that the one-shot models have limited generalization powers to unrelated systems.
+
+\begin{table}
+    \centering
+    \begin{tabular}{ |c|c|c|c| } 
+    \hline
+    SIDER from Tox21 & Siamese & AttnLSTM & IterRefLSTM \\ 
+    \hline
+    10+/10- & $0.511 \pm 0.031$ & $0.509 \pm 0.014$ & $0.509 \pm 0.012$ \\
+    \hline
+    \end{tabular}
+    \caption{ROC-AUC scores of models trained on Tox21 on median SIDER task for each model on SIDER. Note that models are evaluated on all SIDER tasks and not just the held-out SIDER tasks from previous section. Numbers reported are means and standard deviations. Randomness is over the choice of support set; experiment is repeated with 20 support sets. The result with highest mean in each row is highlighted. The notation 10+/10- indicates supports with $10$ positive examples and $10$ negative examples.}
+    \label{tab:transfer}
+\end{table}
+
+
+\clearpage
+
+\subsubsection*{Acknowledgments}
+
+We would like to thank the Stanford Computing Resources for providing us with access to the Sherlock and Xstream GPU clusters. Thanks to David Duvenaud for useful preliminary discussions.
+
+B.R. was supported by the Fannie and John Hertz Foundation.
+%\bibliography{paper.bib}
+
+\newpage
+\section*{For Table of Contents Use Only}
+{\huge \centering Low Data Drug Discovery with One-shot Learning}
+
+{\Large Han Altae-Tran*, Bharath Ramsundar*, Aneesh S. Pappu, Vijay Pande}
+
+* equal contribution
+
+\begin{figure}[H]
+\includegraphics{Images/For_Table_Of_Contents_Only.png}
+\end{figure}
+
+Synopsis: We demonstrate how one-shot learning can lower the amount of data required to make meaningful predictions in drug discovery. Our architecture, the iterative refinement LSTM, permits the learning of meaningful distance metrics on small-molecule space.
+
+
+%\end{document}

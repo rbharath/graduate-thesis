@@ -1,44 +1,14 @@
 \section{MoleculeNet: A Benchmark for Molecular Machine Learning}
 
+This chapter is adapted from: 
+
+Wu, Zhenqin*, Bharath Ramsundar*, Evan N. Feinberg, Joseph Gomes, Caleb Geniesse, Aneesh S. Pappu, Karl Leswing, and Vijay Pande. "MoleculeNet: a benchmark for molecular machine learning." (* equal contribution). \cite{wu2017moleculenet}.
+
+I was the joint first author and worked on conception of the original idea, implementation and execution of experiments, and writing of the paper.
+
 \subsection{Abstract}
-Molecular machine learning has been maturing rapidly over the last few years. Improved methods and the presence of larger datasets have enabled machine learning algorithms to make increasingly accurate predictions about molecular properties. However, algorithmic progress has been limited due to the lack of a standard benchmark to compare the efficacy of proposed methods; most new algorithms are benchmarked on different datasets making it challenging to gauge the quality of proposed methods. This work introduces MoleculeNet, a large scale benchmark for molecular machine learning. MoleculeNet curates multiple public datasets, establishes metrics for evaluation, and offers high quality open-source implementations of multiple previously proposed molecular featurization and learning algorithms (released as part of the DeepChem open source library). MoleculeNet benchmarks demonstrate that learnable representations are powerful tools for molecular machine learning and broadly offer the best performance. However, this result comes with caveats. Learnable representations still struggle to deal with complex tasks under data scarcity and highly imbalanced classification. For quantum mechanical and biophysical datasets, the use of physics-aware featurizations can be more important than choice of particular learning algorithm. \\%The abstrast goes here instead of the text "The abstract should be..."
+Molecular machine learning has been maturing rapidly over the last few years. Improved methods and the presence of larger datasets have enabled machine learning algorithms to make increasingly accurate predictions about molecular properties. However, algorithmic progress has been limited due to the lack of a standard benchmark to compare the efficacy of proposed methods; most new algorithms are benchmarked on different datasets making it challenging to gauge the quality of proposed methods. This work introduces MoleculeNet, a large scale benchmark for molecular machine learning. MoleculeNet curates multiple public datasets, establishes metrics for evaluation, and offers high quality open-source implementations of multiple previously proposed molecular featurization and learning algorithms (released as part of the DeepChem open source library). MoleculeNet benchmarks demonstrate that learnable representations are powerful tools for molecular machine learning and broadly offer the best performance. However, this result comes with caveats. Learnable representations still struggle to deal with complex tasks under data scarcity and highly imbalanced classification. For quantum mechanical and biophysical datasets, the use of physics-aware featurizations can be more important than choice of particular learning algorithm. 
 
-%\end{tabular}
-
-%\end{@twocolumnfalse} \vspace{0.6cm}
-
-%]
-%%%END OF TITLE, AUTHORS AND ABSTRACT%%%
-
-%%%FONT SETUP - please do not change any commands within this section
-%\renewcommand*\rmdefault{bch}\normalfont\upshape
-%\rmfamily
-%\section*{}
-%\vspace{-1cm}
-
-
-%%%FOOTNOTES%%%
-
-%\footnotetext{\textit{$^{a}$~Department of Chemistry, Stanford %University, Stanford, CA 94305, USA. E-mail: pande@stanford.edu}}
-%\footnotetext{\textit{$^{b}$~Department of Computer Science, Stanford University, Stanford, CA 94305, USA}}
-%\footnotetext{\textit{$^{c}$~Program in Biophysics, Stanford School of Medicine, Stanford, CA 94305, USA}}
-%\footnotetext{\textit{$^{d}$~Schrodinger Inc., USA}}
-
-
-
-%Please use \dag to cite the ESI in the main text of the article.
-%If you article does not have ESI please remove the the \dag symbol from the title and the footnotetext below.
-%\footnotetext{\dag~Electronic Supplementary Information (ESI) available: [details of any supplementary information available should be included here]. See DOI: 10.1039/b000000x/}
-%additional addresses can be cited as above using the lower-case letters, c, d, e... If all authors are from the same address, no letter is required
-
-%\footnotetext{\ddag~Joint First Authorship}
-%\footnotetext{\P~Joint Second Authorship}
-
-
-%%%END OF FOOTNOTES%%%
-
-
-%%%MAIN TEXT%%%%
 \subsection{Introduction} \label{Introduction}
 
 Overlap between chemistry and 

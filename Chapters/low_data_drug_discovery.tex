@@ -1,9 +1,14 @@
 \section{Low Data Drug Discovery with One-Shot Learning}
 
-\begin{abstract}
+This chapter is adapted from: 
+
+Altae-Tran, Han*, Bharath Ramsundar*, Aneesh S. Pappu, and Vijay Pande. "Low data drug discovery with one-shot learning." ACS central science (* equal contribution) \cite{altae2017low}. 
+
+I was the joint first author and worked on conception of the original idea, implementation, design and execution of experiments, and writing of the paper.
+
+\subsection{Abstract}
 Recent advances in machine learning have made significant contributions to drug discovery. Deep neural networks in particular have been demonstrated to provide significant boosts in predictive power when inferring the properties and activities of small-molecule compounds \cite{ma2015deep}. However, the applicability of these techniques has been limited by the requirement for large amounts of training data. In this work, we demonstrate how one-shot learning can be used to significantly lower the amounts of data required to make meaningful predictions in drug discovery applications. We introduce a new architecture, the iterative refinement LSTM, that, when combined with graph convolutional neural networks, significantly improves learning of meaningful distance metrics over small-molecules. We open source all models introduced in this work as part of DeepChem, an open-source framework for deep-learning in drug discovery
 \cite{ram2016}.
-\end{abstract}
 
 \subsection{Introduction}
 The lead optimization step of drug discovery is fundamentally a low-data problem. When biological studies yield evidence that a particular molecule can modulate essential pathways to achieve therapeutic activity, the discovered molecule often fails as a potential drug for a number of reasons including toxicity, low activity, and low solubility \cite{waring2015analysis}. The central problem of small-molecule based drug-discovery is to optimize the candidate molecule by finding analogue molecules with increased pharmaceutical activity and reduced risks to the patient. Yet, with only a small amount of biological data available on the candidate and related molecules, it is challenging to form accurate predictions for novel compounds.
@@ -274,21 +279,3 @@ Results are in Table~\ref{tab:transfer}. None of our models achieve any predicti
 We would like to thank the Stanford Computing Resources for providing us with access to the Sherlock and Xstream GPU clusters. Thanks to David Duvenaud for useful preliminary discussions.
 
 B.R. was supported by the Fannie and John Hertz Foundation.
-%\bibliography{paper.bib}
-
-\newpage
-\section*{For Table of Contents Use Only}
-{\huge \centering Low Data Drug Discovery with One-shot Learning}
-
-{\Large Han Altae-Tran*, Bharath Ramsundar*, Aneesh S. Pappu, Vijay Pande}
-
-* equal contribution
-
-\begin{figure}[H]
-\includegraphics{Images/For_Table_Of_Contents_Only.png}
-\end{figure}
-
-Synopsis: We demonstrate how one-shot learning can lower the amount of data required to make meaningful predictions in drug discovery. Our architecture, the iterative refinement LSTM, permits the learning of meaningful distance metrics on small-molecule space.
-
-
-%\end{document}

@@ -27,6 +27,7 @@
 \usepackage{csvsimple}
 \usepackage{siunitx}
 \usepackage{bbm}
+\usepackage{bibentry}
 %\usepackage{ulem}
 %\usepackage{pdfpages}
 %\usepackage{fullpage}
@@ -154,7 +155,18 @@ chemistry, materials science, or other molecular design applications. However, o
 \acknowledgements{
 \addtocontents{toc}{\vspace{1em}}  % Add a gap in the Contents, for aesthetics
 
-The acknowledgements and the people to thank go here, don't forget to include your project advisor\ldots
+My thanks to the computer science department at Stanford for taking a chance on a student who'd previously spent more time working on math than on computers.
+
+My thanks to Robert McGibbon for my initial introduction to computational chemistry. To Steven Kearnes for teaching me about computational drug discovery. To David Konerding for letting me take on a crazy internship project at Google working on drug discovery. To Patrick Riley and the GAS team at Google for giving me the opportunity to continue exploring deep learning and drug discovery at Google. To Evan Feinberg for explaining and exploring protein binding with me. To Joe Gomes for teaching me some quantum chemistry and force field design. To Michael Wu for working with me on a small benchmarking project that grew into a multiyear effort. To Bowen Liu for helping me understand chemical synthesis. To Aneesh Pappu for being a great summer intern. To Prasad Kawthekar for exploring the DeepChem GUI and synthesis with me.
+
+My thanks to my industrial collaborators from pharma, Denny Rajiah, Govindan Subramanian, Robert Sheridan, Andreas Verras, and Matthew Tudor for taking a chance on experimenting with untested machine learning methods.
+
+I'd especially like to acknowledge the entire DeepChem development team. It's your efforts that have transformed a few scripts on GitHub into a thriving open source project and community. Special thanks to Peter Eastman, Karl Leswing, and Michael Wu for all the time they've put in. More generally, my heartfelt thanks to our users and supporters for putting up with the limitations of our software and working with us to improve it.
+
+My thanks to my computer science co-advisor Leo Guibas for letting me spend all my time working on problems in biology and chemistry.
+
+Finally, my heartfelt thanks to Vijay Pande for letting me spend years exploring the applications of deep learning to chemistry, biology, physics and more. Senior scientists who create a safe space for beginners to explore novel ideas are invaluable, and Vijay was brilliant in letting us explore crazy ideas while providing constant support.
+
 
 }
 \clearpage  % End of the Acknowledgements
@@ -172,7 +184,7 @@ The acknowledgements and the people to thank go here, don't forget to include yo
 \listoffigures  % Write out the List of Figures
 
 %% ----------------------------------------------------------------
-\lhead{\emph{List of Tables}}  % Set the left side page header to "List of Tables"
+\lhead{\emph{Molecular Machine Learning with DeepChem}}  % Set the left side page header to "List of Tables"
 \listoftables  % Write out the List of Tables
 
 %% ----------------------------------------------------------------
@@ -183,7 +195,7 @@ The acknowledgements and the people to thank go here, don't forget to include yo
 \setstretch{1.3}  % Return the line spacing back to 1.3
 
 \pagestyle{empty}  % Page style needs to be empty for this page
-\dedicatory{For/Dedicated to/To my\ldots}
+\dedicatory{Dedicated to my family for their unstinting love, encouragement, and support}
 
 \addtocontents{toc}{\vspace{2em}}  % Add a gap in the Contents, for aesthetics
 
@@ -194,20 +206,20 @@ The acknowledgements and the people to thank go here, don't forget to include yo
 
 % Include the chapters of the thesis, as separate files
 % Just uncomment the lines as you write the chapters
-\clearpage
-\input{Chapters/massively_multitask.tex}
-\clearpage
-\input{Chapters/moleculenet.tex}
+%\clearpage
+%\input{Chapters/massively_multitask.tex}
+%\clearpage
+%\input{Chapters/moleculenet.tex}
 \clearpage
 \input{Chapters/low_data_drug_discovery.tex}
-\clearpage
-\input{Chapters/acnn.tex}
-\clearpage
-\input{Chapters/retrosynthesis.tex}
-\clearpage
-\input{Chapters/is_multitask_practical.tex}
-\clearpage
-\input{Chapters/bace.tex}
+%\clearpage
+%\input{Chapters/acnn.tex}
+%\clearpage
+%\input{Chapters/retrosynthesis.tex}
+%\clearpage
+%\input{Chapters/is_multitask_practical.tex}
+%\clearpage
+%\input{Chapters/bace.tex}
 
 
 
@@ -217,16 +229,16 @@ The acknowledgements and the people to thank go here, don't forget to include yo
 \addtocontents{toc}{\vspace{2em}} % Add a gap in the Contents, for aesthetics
 
 \appendix % Cue to tell LaTeX that the following 'chapters' are Appendices
-\clearpage
-\input{Appendices/appendix_massively_multitask.tex}
-\clearpage
-\input{Appendices/moleculenet_appendix.tex}
-\clearpage
-\input{Appendices/low_data_appendix.tex}
-\clearpage
-\input{Appendices/acnn_appendix.tex}
-\clearpage
-\input{Appendices/multitask_practical_appendix.tex}
+%\clearpage
+%\input{Appendices/appendix_massively_multitask.tex}
+%\clearpage
+%\input{Appendices/moleculenet_appendix.tex}
+%\clearpage
+%\input{Appendices/low_data_appendix.tex}
+%\clearpage
+%\input{Appendices/acnn_appendix.tex}
+%\clearpage
+%\input{Appendices/multitask_practical_appendix.tex}
 
 
 \addtocontents{toc}{\vspace{2em}}  % Add a gap in the Contents, for aesthetics

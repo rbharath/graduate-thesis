@@ -1,5 +1,20 @@
 \section{Appendix: Low Data Drug Discovery with One-Shot Learning}
 
+\newpage
+\subsection*{Table of Contents Display Picture}
+{\huge \centering Low Data Drug Discovery with One-shot Learning}
+
+{\Large Han Altae-Tran*, Bharath Ramsundar*, Aneesh S. Pappu, Vijay Pande}
+
+* equal contribution
+
+\begin{figure}[H]
+\includegraphics{Images/For_Table_Of_Contents_Only.png}
+\end{figure}
+
+Synopsis: We demonstrate how one-shot learning can lower the amount of data required to make meaningful predictions in drug discovery. Our architecture, the iterative refinement LSTM, permits the learning of meaningful distance metrics on small-molecule space.
+
+
 \subsection{Definitions of Graph Primitives}
 
 There are three major neural-network layers that are used to featurizing the molecular graphs. This is the graph convolution, $h_{\rm conv}(G)$, the graph pool, $h_{\rm pool}(G)$, and the graph gather, $h_{\rm gather}(G)$, all defined below. The graph convolution and graph pool operations definitions are given for a single node in the graph $v\in V$; however, when performing the operation on the graph, $G$, the operation is performed on all nodes simultaneously. This means that $h_{\rm conv}(G) = [h_{\rm conv}(v_1), h_{\rm conv}(v_2),\dots]$, and similarly for the pool layer. Specifically, we define

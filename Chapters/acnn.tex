@@ -1,10 +1,8 @@
 \section{Atomic Convolutional Networks for Predicting Protein-Ligand Binding Affinity}
 
-\subsection{Acknowledgments}
-
 This chapter is adapted from: 
 
-Gomes, J.*, Ramsundar, B.*, Feinberg, E. N., & Pande, V. S. (2017). Atomic Convolutional Networks for Predicting Protein-Ligand Binding Affinity. arXiv preprint arXiv:1703.10603. (*-equal contribution), \cite{gomes2017atomic}. 
+Gomes, Joseph*, Bharath Ramsundar*, Evan N. Feinberg, and Vijay S. Pande. "Atomic convolutional networks for predicting protein-ligand binding affinity." (*-equal contribution), \cite{gomes2017atomic}. 
 
 
 I was the joint first author and worked on all parts of the study including conception, design and execution of experiments, and writing of the paper.
@@ -130,6 +128,11 @@ We consider four methods of splitting PDBBind core and refined sets into subsets
 \paragraph{Performance Metrics}
 To determine the train and test set performance, the squared Pearson correlation coefficient ($R^2$) of log$K_i$ and binding free energy mean unsigned error were evaluated.  Raw scatter plots comparing the actual and predicted log$K_i$ for all datasets and splits using the ACNN and GRID-RF methods are given in Supplementary Information.
 
+\afterpage{%
+\clearpage% Flush earlier floats (otherwise order might not be correct)
+\thispagestyle{empty}% empty page style (?)
+\begin{landscape}% Landscape page
+\centering % Center table
 \begin{table}[h]
   \centering
     \begin{tabular}{|c||c|c||c|c||c|c||c|c||c|c||c|c|}
@@ -166,7 +169,6 @@ To determine the train and test set performance, the squared Pearson correlation
   \caption{Performance (MUE [kcal/mol]) on PDBBind core train/test sets.}
   \label{tab:core-mae}
 \end{table}
-
 \begin{table}[h]
   \centering
     \begin{tabular}{|c||c|c||c|c||c|c||c|c||c|c||c|c|}
@@ -203,6 +205,10 @@ To determine the train and test set performance, the squared Pearson correlation
   \caption{Performance (MUE [kcal/mol]) on PDBBind refined train/test sets.}
   \label{tab:refined-mae}
 \end{table}
+\end{landscape}
+\clearpage% Flush page
+}
+
 
 \subsection{Discussion and Results}
 The results of model training and evaluation on the PDBBind core set are shown in Tables \ref{tab:core-pearson} and \ref{tab:core-mae}.  All ACNN core set models were trained with 15 atom types, 3 radial filters, and a (32, 32, 16) pyramidal atomistic fully-connected layer. ACNN models show comparable or better performance with GRID-RF across all data splits in both Pearson $R^2$ and mean absolute error metrics.  Mean absolute error metrics across all splits within the structure-based methods (ACNN, GRID-RF, GRID-NN) are all comparable, with the exception of scaffold split where ACNN models demonstrate better test performance.  The ligand-based baselines (GCNN, ECFP-RF, ECFP-NN) all exhibit strong train performance, but inferior test performance and fail to generalize well compared with structure-based models due to the lack of features representing protein structure.  One notable exception is the performance of GCNN on the scaffold split core test set, which performs best out of all methods across both metrics.

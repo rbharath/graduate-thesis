@@ -21,6 +21,11 @@ intersections with datasets in other groups.  \end{itemize}
 \figurename~\ref{fig:duplicates} shows the $\Delta$ log-odds-mean-AUC for
 datasets with duplicate and unique targets.
 
+\afterpage{%
+\clearpage% Flush earlier floats (otherwise order might not be correct)
+\thispagestyle{empty}% empty page style (?)
+\begin{landscape}% Landscape page
+\centering % Center table
 \rowcolors{2}{gray!25}{white}
 \csvreader[
 longtable=lSSlp{1.3in},
@@ -45,6 +50,9 @@ Tox21 & 11764 & 7830 & 33.44 \\
 \bottomrule
 \end{tabular}
 \end{table}
+\end{landscape}
+\clearpage% Flush page
+}
 
 \begin{figure}[ht]
 \centering
@@ -55,7 +63,11 @@ Tox21 & 11764 & 7830 & 33.44 \\
 \end{figure}
 
 \clearpage
-
+\afterpage{%
+\clearpage% Flush earlier floats (otherwise order might not be correct)
+\thispagestyle{empty}% empty page style (?)
+\begin{landscape}% Landscape page
+\centering % Center table
 \begin{table}[ht]
 \centering
 \caption{Held-in datasets.}
@@ -101,6 +113,9 @@ tox-SR-ATAD5 & 264 & 6807 & promoter & ATAD5 \\
 \bottomrule
 \end{tabular}
 \end{table}
+\end{landscape}
+\clearpage% Flush page
+}
 
 \begin{figure}[ht]
 \centering

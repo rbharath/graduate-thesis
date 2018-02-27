@@ -192,24 +192,29 @@
     \vskip 60\p@
     \begin{center}
       \setlength{\parskip}{0pt}
-      {\large\textbf{\UNIVNAME}\par}
+      %{\large\textbf{\UNIVNAME}\par}
       \vfill
-      {\huge \bf \@title \par}
+      {\huge  \@title \par}
       \vfill
-      {\LARGE by \par}
+      {\Large A DISSERTATION \par }
+      {\Large SUBMITTED TO THE DEPARTMENT OF COMPUTER SCIENCE \par }
+      {\Large AND THE COMMITTEE ON GRADUATE STUDIES \par }
+      {\Large OF STANFORD UNIVERSITY \par }
+      {\Large IN PARTIAL FULFILLMENT OF THE REQUIREMENTS \par }
+      {\Large FOR THE DEGREE OF \par }
+      {\Large DOCTOR OF PHILOSOPHY \par}
+      \bigskip
+      \bigskip
+      {\Large BY \par}
       \smallskip
-      {\LARGE \authornames \par}
+      {\Large Bharath Ramsundar \par}
       \vfill
-      {\large A thesis submitted in partial fulfillment for the \par}
-      {\large degree of Doctor of Philosophy \par}
-      \bigskip
-      \bigskip
-      {\large in the \par}
+      %{\large in the \par}
       %{\large \facname \par}
-      {\large \deptname \par}
-      \bigskip
-      \bigskip
-      \bigskip
+      %{\large \deptname \par}
+      %\bigskip
+      %\bigskip
+      %\bigskip
       {\Large \@date \par}
       \bigskip
     \end{center}
@@ -233,7 +238,8 @@
 \newenvironment{abstract}
 {
   \btypeout{Abstract Page}
-  \thispagestyle{empty}
+  \thispagestyle{plain}
+  
   \null\vfil
   \begin{center}
     \setlength{\parskip}{0pt}
